@@ -28,10 +28,10 @@ KERNEL_OBJECTS = \
 USER_OBJECTS = crtso.o libc.o calls.o buddy.o
 
 
-COREUTILS = sh ls cat find pwd echo hello dsh
+COREUTILS = sh ls cat find pwd echo hello dsh kill
 COREUTILS_OBJECTS = $(addsuffix .o, $(COREUTILS))
 
-TESTS = mptest
+TESTS = mptest daemon
 TESTS_OBJECTS = $(addsuffix .o, $(TESTS))
 
 TEST_UTILS = fstool testbuddy
@@ -59,7 +59,7 @@ boot: default fs
 
 fs: default
 	./mkfstree.sh
-	cp $(COREUTILS) $(FILE_SYSTEM_BIN)
+	cp $(COREUTILS) $(TESTS) $(FILE_SYSTEM_BIN)
 	./mk_filesystem_image.sh
 
 fstool: fstool.c filesystem.c filesystem.h

@@ -84,6 +84,65 @@ void *memcpy(void *dest, const void *src, size_t len)
 }
 
 /*
+ * Standard C function: parse a string that represents a decimal integer.
+ * Leading whitespace is allowed. Trailing gunk is allowed too. Doesn't
+ * really report syntax errors in any useful way.
+ */
+ 
+int atoi(const char *s)
+{
+        static const char digits[] = "0123456789";  /* legal digits in order */
+        unsigned val=0;         /* value we're accumulating */
+        int neg=0;              /* set to true if we see a minus sign */
+
+        /* skip whitespace */
+        while (*s==' ' || *s=='\t') {
+                s++;
+        }
+
+        /* check for sign */
+        if (*s=='-') {
+                neg=1;
+                s++;
+        }
+        else if (*s=='+') {
+                s++;
+        }
+
+        /* process each digit */
+        while (*s) {
+                const char *where;
+                unsigned digit;
+                
+                /* look for the digit in the list of digits */
+                where = strchr(digits, *s);
+                if (where==NULL) {
+                        /* not found; not a digit, so stop */
+                        break;
+                }
+
+                /* get the index into the digit list, which is the value */
+                digit = (where - digits);
+
+                /* could (should?) check for overflow here */
+
+                /* shift the number over and add in the new digit */
+                val = val*10 + digit;
+
+                /* look at the next character */
+                s++;
+        }
+        
+        /* handle negative numbers */
+        if (neg) {
+                return -val;
+        }
+        
+        /* done */
+        return val;
+}
+
+/*
  * The  strlen()  function  calculates  the  length  of  the string s, not
  * including the terminating '\0' character. The strlen() function returns
  * the number of characters in s.
@@ -95,6 +154,25 @@ size_t strlen(const char *s)
 		len++;
 	return len;
 }
+
+strchr(const char *s, int ch)
+{
+	/* scan from left to right */
+	while (*s) { /* if we hit it, return it */
+		if (*s==ch)
+			return (char *)s;
+		s++;
+	}
+
+	/* if we were looking for the 0, return that */
+	if (*s==ch) {
+		return (char *)s;
+	}
+
+	/* didn't find it */
+	return NULL;
+}
+
 
 /*
  * The strcmp() function compares the two strings s1 and s2.  It returns
@@ -216,7 +294,6 @@ char *strncat(char *dest, const char *src, size_t n)
 #define addchar(_pos,_c) { if ((_pos)+1 < size)   \
                              str[(_pos)] = (_c);  \
                            (_pos)++; }
-
 void
 print_num(char *str, size_t size, size_t * pos, unsigned int val,
 	  unsigned int base)
