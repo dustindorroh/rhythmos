@@ -5,7 +5,7 @@
 
 #!/bin/bash
 ROOTFS=$(readlink -f $PWD/../rootfs)
-echo "Creating rootfs"
+echo "Creating rootfs" $'\n'
 
 # Create rootfs if not already created.
 if [ ! -d "$ROOTFS" ]; then

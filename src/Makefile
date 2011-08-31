@@ -7,7 +7,8 @@ CPP = cpp
 LD = ld
 
 PRJ_ROOT ?= ..
-KERNEL_IMG = kernel.bin
+KERNEL_IMG = kernel.img
+FILESYSTEM_IMG = filesystem.img
 GRUB_IMG = grub.img
 KERNEL_OBJECTS = \
 	start.o \
@@ -96,7 +97,7 @@ run-qemu: boot
 install:
 
 clean:
-	-rm --force $(KERNEL_IMG) $(KERNEL_OBJECTS) \
+	-rm --force $(KERNEL_IMG) $(KERNEL_OBJECTS) $(FILESYSTEM_IMG) \
 	$(USER_OBJECTS) \
 	$(COREUTILS) $(COREUTILS_OBJECTS) \
 	$(TESTS) $(TESTS_OBJECTS) \

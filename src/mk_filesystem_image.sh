@@ -19,7 +19,7 @@ if [ -f fstool ]; then
 	fi
 
 	./fstool -build filesystem.img $ROOTFS >/dev/null || exit 1
-	echo "finished"
+	echo "finished" $'\n' $'\n'
 else
 	rm -f filesystem.img
 	touch filesystem.img
