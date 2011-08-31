@@ -82,7 +82,7 @@ which is a an attempt at a barebones @sc{unix}-like kernel
 Overview
 
 * RhythmOS Features::                
-* Project Workspace::           
+* Source Code::           
 
 Building RhythmOS
 
@@ -110,79 +110,97 @@ C
 @chapter Overview
 @cindex Overview
 
-This manual is for @code{RhythmOS} (version @value{VERSION}, @value{UPDATED}),
-which is a an attempt at a barebones @sc{unix}-like kernel.
-
+This manual is for @code{RhythmOS} (version @value{VERSION},
+@value{UPDATED}), which is a an attempt at a barebones @sc{unix}-like
+kernel. This document intends to cover the how to build, use, and
+develop on Rhythmos as well as explain in depth some of the kernel
+internals.
 
 @menu
-* RhythmOS Features::                
-* Project Workspace::           
+* RhythmOS Features:: * Source Code::
 @end menu
 
-@node RhythmOS Features, Project Workspace, Overview, Overview
+@node RhythmOS Features, Source Code, Overview, Overview
 @subsection RhythmOS Features
 @cindex RhythmOS Features
 
-These definitions are used throughout the remainder of this manual.
-
-@c @include features.texi
-
-As of right now this guide is intended to help me rember why I made the
-design decisions I did.  Most of those decisions I did reach were
-derived from much more important decuments than this.  This document
-covers most of the design issues and goals that went into a small
-@sc{unix} like kernel. The code base is small enough that I will use
-source examples to help convey the topics. I will be putting links to
-other examples and projects that helped me. I recommend digging through
-other projects’ source as much as possible.
-
+@itemize @bullet
+@item
+Small C library
+@item
+Kernel mode and mode user
+@item
+Basic Multitasking through the use of context switches and
+ memory protection
+@item
+Dynamic memory allocation (using buddy allocation technique)
+@item
+Virtual memory
+@item
+Kernel Paging
+@item
+UNIX-like system calls:
+@itemize @minus
+Process management: @code{fork}, @code{kill}, @code{execve},
+@code{waitpid} @dots{}
+@item
+Interprocess Communication (IPC): pipe, dup
+@end itemize
+@item
+Read only filesystem
+@end itemize
 
 @cindex authors
 @cindex Dustin, Dorroh
 
-@node Project Workspace,  , RhythmOS Features, Overview
-@subsection Project Workspace
-@cindex Project Workspace
+@node Source Code,  , RhythmOS Features, Overview
+@subsection Source Code
+@cindex Source Code
 
-The location of your project workspace is up to you, but I strongly
-encourage you @strong{not} to pick a system-wide entry such as
-@file{/usr} or @file{/usr/local}. Developing in your home folder reduces
-the possibly of affecting other users, or @emph{visa versa}, with your
-project. To be able to explain and navigate the source tree,
-@env{PRJROOT} will corespond to @code{RhythmOS}'s root project
-directory.
+@c The location of your project workspace is up to you, but I strongly
+@c encourage you @strong{not} to pick a system-wide entry such as
+@c @file{/usr} or @file{/usr/local}. Developing in your home folder
+@c reduces the possibly of affecting other users, or @emph{visa versa},
+@c with your project.
 
-@cindex PRJROOT
-@strong{Example:}
-@example
-If RhythmOS’s project directory is located in @file{@env{$HOME}}, then
-   @env{PRJROOT}=@file{$@env{HOME}/rhythmos}
-@end example
+@c To be able to explain and navigate the source tree,
+@c @env{PRJROOT} will corespond to @code{RhythmOS}'s root project
+@c directory.
 
-From here on all paths will be relative to @env{PRJROOT} unless
-otherwise noted.
+@c @cindex PRJROOT
+@c @strong{Example:}
+@c @example
+@c If RhythmOS’s project directory is located in @file{@env{$HOME}}, then
+@c    @env{PRJROOT}=@file{$@env{HOME}/rhythmos}
+@c @end example
 
-@strong{Examples:}
-@example
- @file{src}=@file{@env{PRJROOT}/src}
- @file{src/libc.c}=@file{@env{PRJROOT}/src/libc.c}
-@end example
+@c From here on all paths will be relative to @env{PRJROOT} unless
+@c otherwise noted.
+
+@c @strong{Examples:}
+@c @example
+@c  @file{src}=@file{@env{PRJROOT}/src}
+@c  @file{src/libc.c}=@file{@env{PRJROOT}/src/libc.c}
+@c @end example
 
 
 @node  Building RhythmOS, Running RhythmOS, Overview, Top
 @chapter Building RhythmOS
 @cindex Building RhythmOS
 
-Change directories to @env{PRJROOT}, @code{RhythmOS}'s project root.
-To compile @code{RhythmOS}, type @command{`make'}. To create the root file
-system for @code{RhythmOS}, type @command{`make fs'}. To build the
-bootloader, type @command{`make boot'}.
+From the top level project directory execute the configure script.
+@example
+$ ./configure
+@end example
 
+To build everything just type @command{`make'}. This should build the
+kernel image @file{kernel.img}, the file system image
+@file{filesystem.img}, and the grub boot image @file{grub.img}
 @example
 $ make
-$ make fs
-$ make boot
 @end example
+To only build root file system type @command{`make fs'}. To only build
+the bootloader type @command{`make boot'}.
 
 @menu
 * Build Internals::             
@@ -219,7 +237,7 @@ Generate Bootloader Image (@pxref{Generate Bootloader Image})
 Executing @command{make} compiles individual source (@code{.c}) into
 object files (@code{.o}). The linker (@command{ld}) is then used next to
 link the object files into one binary
-@file{src/kernel.bin}. @xref{Assembly}.
+@file{src/kernel.img}. @xref{Assembly}.
 
 
 @node Generate Filesystem Image, Generate Bootloader Image, Generate Kernel Image, Build Internals
@@ -302,9 +320,9 @@ under qemu using one of the following commands:
 @end example
 
 This same command can also be run through the @command{make} target
-@code{run-qemu};
+@code{run};
 @example
-@code{make run-qemu}
+@code{make run}
 @end example
 
 @node Programming the kernel, Multitasking, Running RhythmOS, Top
@@ -460,8 +478,8 @@ List of all the syscalls RhythmOS has available:
           KERNEL             USER         LOCATION
           -----------------------------------------
           syscall_pipe       pipe         pipe.c
-          syscall_getpid     getpid       syscall.c  
-          syscall_exit       exit         syscall.c 
+          syscall_getpid     getpid       syscall.c
+          syscall_exit       exit         syscall.c
           syscall_write      write        syscall.c
           syscall_read       read         syscall.c
           syscall_geterrno   geterrno     syscall.c
@@ -552,7 +570,7 @@ Variable data
 @cindex problems
 @cindex reporting bugs
 
-To report bugs or suggest enhancements for GNU Hello, please send
+To report bugs or suggest enhancements for RhythmOS, please send
 electronic mail to @email{dustindorroh@@gmail.com}.
 
 @include gnu.texi
