@@ -69,7 +69,7 @@ html: version $(HTML)
 
 ps: version  $(PS)
 
-version:
+version: $(TEXI)
 	./version.sh
 
 $(INFO): $(TEXI)

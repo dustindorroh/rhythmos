@@ -1,4 +1,11 @@
 #!/bin/bash
+# Check to see if the texinfo has been updated with git.
+test=$(git status --porcelain rhythmos.texi)
+if [ "$test" != " M doc/rhythmos.texi" ]; then 
+    echo "version.texi is already up to date" 
+    exit 0
+fi
+
 cp version.texi version.texi.bak
 VERSION="$(cat version.texi | grep VERSION|awk '{print $3}' | tr '\n' ' ';)"
 EDITION="$(cat version.texi | grep EDITION|awk '{print $3}' | tr '\n' ' ';)"
@@ -19,6 +26,11 @@ echo '@set EDITION '$EDITION >> version.texi
 echo '@set VERSION '$VERSION >> version.texi
 diff version.texi.bak version.texi > /dev/null
 diff_return=$?
-[[ 1 -eq $diff_return ]] && echo "version.texi updated"
+if [ 1 -eq $diff_return ]; then
+    rm version.texi.bak 
+    echo "version.texi updated"
+fi
+
 [[ 0 -eq $diff_return ]] && echo "version.texi is already up to date"
+
 exit 0

@@ -157,6 +157,12 @@ Read only filesystem
 @subsection Source Code
 @cindex Source Code
 
+Use git to clone a copy of the source tree. Use the command below to
+clone the RhythmOS repository.
+@example
+@code{git clone https://code.google.com/p/rhythmos/}
+@end example
+
 @c The location of your project workspace is up to you, but I strongly
 @c encourage you @strong{not} to pick a system-wide entry such as
 @c @file{/usr} or @file{/usr/local}. Developing in your home folder
@@ -295,16 +301,16 @@ bootloader. First we @file{mk_boot_image.sh} makes sure to delete the
 old kernel image and filesystem image from the GRUB image.
 
 @example
-$ mdel -i grub.img ::kernel.bin || true
+$ mdel -i grub.img ::kernel.img || true
 $ mdel -i grub.img ::filesystem.img || true
 @end example
 
 Lastly @file{mk_boot_image.sh} writes the kernel image
-(@file{kernel.bin}) and filesystem image (@file{kernel.bin}) data to the
+(@file{kernel.img}) and filesystem image (@file{kernel.img}) data to the
 GRUB image @file{grub.img}.
 
 @example
-$ mcopy -i grub.img kernel.bin :: || exit 1
+$ mcopy -i grub.img kernel.img :: || exit 1
 $ mcopy -i grub.img filesystem.img :: || exit 1
 @end example
 
