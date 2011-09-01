@@ -2,9 +2,29 @@
 #
 #       Copyright 2011 Dustin Dorroh <dustindorroh@gmail.com>
 #
+
+
+# Host defs
 CC = gcc
 CPP = cpp
 LD = ld
+AS = as
+
+# Target defs
+ARCH = $(shell arch)
+ifeq ($(ARCH),x86_64)
+HOST_CFLAGS = 
+TARGET_CC = i386-elf-gcc
+TARGET_CPP = i386-elf-cpp
+TARGET_LD = i386-elf-ld
+TARGET_AS = i386-elf-as
+else
+HOST_CFLAGS = -m32
+TARGET_CC = gcc
+TARGET_CPP = cpp
+TARGET_LD = ld
+TARGET_AS = as
+endif
 
 PRJ_ROOT ?= ..
 KERNEL_IMG = kernel.img
@@ -64,28 +84,28 @@ fs: default
 	./mk_filesystem_image.sh
 
 fstool: fstool.c filesystem.c filesystem.h
-	$(CC) -m32 -DUSE_UNIXPROC -DUSERLAND -Wall -o fstool fstool.c filesystem.c
+	$(CC) $(HOST_CFLAGS) -DUSE_UNIXPROC -DUSERLAND -Wall -o fstool fstool.c filesystem.c
 
 testbuddy: testbuddy.c buddy.c buddy.h
-	$(CC) -m32 -DUSERLAND -Wall -o testbuddy testbuddy.c buddy.c
+	$(CC) $(HOST_CFLAGS) -DUSERLAND -Wall -o testbuddy testbuddy.c buddy.c
 
 %.o: %.c *.h
-	$(CC) -m32 -fno-stack-protector -Wall -nostdinc -fno-builtin -c $<
+	$(TARGET_CC) -m32 -fno-stack-protector -Wall -nostdinc -fno-builtin -c $<
 
 %.o: %.s
-	$(CPP) $< | as -o $*.o
+	$(TARGET_CPP) $< | $(TARGET_AS) -o $*.o
 
 
 # Link using `link.ld'
 $(KERNEL_IMG): $(KERNEL_OBJECTS)
-	$(LD) -T link.ld -o $(KERNEL_IMG) $(KERNEL_OBJECTS)
+	$(TARGET_LD) -T link.ld -o $(KERNEL_IMG) $(KERNEL_OBJECTS)
 
 # Link using `link-user.ld'
 $(COREUTILS): %: %.o $(USER_OBJECTS)
-	$(LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
+	$(TARGET_LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
 
 $(TESTS): %: %.o $(USER_OBJECTS)
-	$(LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
+	$(TARGET_LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
 
 # Misc targets
 .PHONY : run run-qemu install clean
@@ -103,4 +123,3 @@ clean:
 	$(TESTS) $(TESTS_OBJECTS) \
 	$(TEST_UTILS) $(TEST_UTILS_OBJECTS) \
 	$(PROGRAMS) $(PROGRAMS_OBJECTS)
-

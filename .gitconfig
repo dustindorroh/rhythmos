@@ -1,0 +1,23 @@
+[gui]
+[gui]
+	fontui = -family helvetica -size 13 -weight bold -slant roman -underline 0 -overstrike 0
+	trustmtime = true
+	fontdiff = -family Courier -size 14 -weight normal -slant roman -underline 0 -overstrike 0
+	fastcopyblame = true
+	pruneduringfetch = true
+	matchtrackingbranch = true
+	newbranchtemplate = Sunday, June 05 2011 05:28 AM
+[merge]
+	tool = meld
+	summary = true
+[user]
+	email = dustindorroh@gmail.com
+	name = Dustin Dorroh
+[guitool "dustin"]
+	cmd = 
+	noconsole = yes
+	needsfile = yes
+	argprompt = yes
+	revprompt = yes
+[core]
+	editor = emacs
