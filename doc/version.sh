@@ -27,10 +27,8 @@ echo '@set VERSION '$VERSION >> version.texi
 diff version.texi.bak version.texi > /dev/null
 diff_return=$?
 if [ 1 -eq $diff_return ]; then
-    rm version.texi.bak 
     echo "version.texi updated"
 fi
-
 [[ 0 -eq $diff_return ]] && echo "version.texi is already up to date"
-
+rm version.texi.bak 
 exit 0
