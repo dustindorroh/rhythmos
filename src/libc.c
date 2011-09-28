@@ -9,19 +9,19 @@
 char *error_names[15] = {
 	"Success",
 	"",
-	"Bad file descriptor",			/* EBADF */
-	"Invalid argument",				/* EINVAL */
-	"No such process",				/* ESRCH */
-	"Operation not permitted",		/* EPERM */
+	"Bad file descriptor",	/* EBADF */
+	"Invalid argument",	/* EINVAL */
+	"No such process",	/* ESRCH */
+	"Operation not permitted",	/* EPERM */
 	"No such file or directory",	/* ENOENT */
-	"Too many open files",			/* EMFILE */
-	"Is a directory",				/* EISDIR */
-	"Not a directory",				/* ENOTDIR */
-	"Function not implemented",		/* ENOSYS */
-	"Not enough space",				/* ENOMEM */
-	"Bad address",					/* EFAULT */
+	"Too many open files",	/* EMFILE */
+	"Is a directory",	/* EISDIR */
+	"Not a directory",	/* ENOTDIR */
+	"Function not implemented",	/* ENOSYS */
+	"Not enough space",	/* ENOMEM */
+	"Bad address",		/* EFAULT */
 	"Resource unavailable, try again",	/* EAGAIN */
-	"No child processes"			/* ECHILD */
+	"No child processes"	/* ECHILD */
 };
 
 char *strerror(int errnum)
@@ -88,58 +88,57 @@ void *memcpy(void *dest, const void *src, size_t len)
  * Leading whitespace is allowed. Trailing gunk is allowed too. Doesn't
  * really report syntax errors in any useful way.
  */
- 
+
 int atoi(const char *s)
 {
-        static const char digits[] = "0123456789";  /* legal digits in order */
-        unsigned val=0;         /* value we're accumulating */
-        int neg=0;              /* set to true if we see a minus sign */
+	static const char digits[] = "0123456789";	/* legal digits in order */
+	unsigned val = 0;	/* value we're accumulating */
+	int neg = 0;		/* set to true if we see a minus sign */
 
-        /* skip whitespace */
-        while (*s==' ' || *s=='\t') {
-                s++;
-        }
+	/* skip whitespace */
+	while (*s == ' ' || *s == '\t') {
+		s++;
+	}
 
-        /* check for sign */
-        if (*s=='-') {
-                neg=1;
-                s++;
-        }
-        else if (*s=='+') {
-                s++;
-        }
+	/* check for sign */
+	if (*s == '-') {
+		neg = 1;
+		s++;
+	} else if (*s == '+') {
+		s++;
+	}
 
-        /* process each digit */
-        while (*s) {
-                const char *where;
-                unsigned digit;
-                
-                /* look for the digit in the list of digits */
-                where = strchr(digits, *s);
-                if (where==NULL) {
-                        /* not found; not a digit, so stop */
-                        break;
-                }
+	/* process each digit */
+	while (*s) {
+		const char *where;
+		unsigned digit;
 
-                /* get the index into the digit list, which is the value */
-                digit = (where - digits);
+		/* look for the digit in the list of digits */
+		where = strchr(digits, *s);
+		if (where == NULL) {
+			/* not found; not a digit, so stop */
+			break;
+		}
 
-                /* could (should?) check for overflow here */
+		/* get the index into the digit list, which is the value */
+		digit = (where - digits);
 
-                /* shift the number over and add in the new digit */
-                val = val*10 + digit;
+		/* could (should?) check for overflow here */
 
-                /* look at the next character */
-                s++;
-        }
-        
-        /* handle negative numbers */
-        if (neg) {
-                return -val;
-        }
-        
-        /* done */
-        return val;
+		/* shift the number over and add in the new digit */
+		val = val * 10 + digit;
+
+		/* look at the next character */
+		s++;
+	}
+
+	/* handle negative numbers */
+	if (neg) {
+		return -val;
+	}
+
+	/* done */
+	return val;
 }
 
 /*
@@ -154,25 +153,28 @@ size_t strlen(const char *s)
 		len++;
 	return len;
 }
-
-strchr(const char *s, int ch)
+/* 
+ * The strchr() function returns a pointer to the first occurrence of the 
+ * character c in the string s.
+ */
+//strchr(const char *s, int ch)
+char *strchr(const char *s, int ch)
 {
 	/* scan from left to right */
-	while (*s) { /* if we hit it, return it */
-		if (*s==ch)
+	while (*s) {		/* if we hit it, return it */
+		if (*s == ch)
 			return (char *)s;
 		s++;
 	}
 
 	/* if we were looking for the 0, return that */
-	if (*s==ch) {
+	if (*s == ch) {
 		return (char *)s;
 	}
 
 	/* didn't find it */
 	return NULL;
 }
-
 
 /*
  * The strcmp() function compares the two strings s1 and s2.  It returns
@@ -289,6 +291,88 @@ char *strncat(char *dest, const char *src, size_t n)
 		*d = 0;
 	}
 	return dest;
+}
+
+/*
+ * The  strpbrk() function locates the first occurrence in the string s of any 
+ * of the characters in the string accept. The strpbrk() function returns a 
+ * pointer to the character in s that matches one of the characters in accept, 
+ * or NULL if no such character is found. 
+ */
+char *strpbrk(char *s, char *accept)
+{
+	while (*s != '0')
+		if (strchr(accept, *s) == NULL)
+			++s;
+		else
+			return (char *)s;
+
+	return NULL;
+}
+
+static char *olds = NULL;
+
+/* 
+ * The strtok() function parses a string into a sequence of tokens. On the first
+ *  call to strtok() the string to be parsed should be specified in str.  In 
+ * each subsequent call that should parse the same string, str should be NULL. 
+ */
+char *strtok(char *s, char *delim)
+{
+	char *token;
+
+	if (s == NULL) {
+		if (olds == NULL) {
+			/*errno = EINVAL;  Wonder where errno is defined.... */
+			return NULL;
+		} else
+			s = olds;
+	}
+
+	/* Scan leading delimiters.  */
+	s += strspn(s, delim);
+	if (*s == '\0') {
+		olds = NULL;
+		return NULL;
+	}
+
+	/* Find the end of the token.  */
+	token = s;
+	s = strpbrk(token, delim);
+	if (s == NULL)
+		/* This token finishes the string.  */
+		olds = NULL;
+	else {
+		/* Terminate the token and make OLDS point past it.  */
+		*s = '\0';
+		olds = s + 1;
+	}
+	return token;
+}
+
+/* 
+ * The strspn() function calculates the length of the initial segment of s 
+ * which consists entirely of characters in accept. The  strspn()  function 
+ * returns the number of characters in the initial segment of s which consist
+ * only of characters from accept.
+ */
+size_t strspn(char *s, char *accept)
+{
+	register char *p;
+	register char *a;
+	register size_t count = 0;
+
+	for (p = s; *p != '\0'; ++p) {
+		for (a = accept; *a != '\0'; ++a)
+			if (*p == *a)
+				break;
+		if (*a == '\0')
+			return count;
+		else
+			++count;
+	}
+
+	return count;
 }
 
 #define addchar(_pos,_c) { if ((_pos)+1 < size)   \
@@ -424,6 +508,7 @@ int printf(const char *format, ...)
 	write(STDOUT_FILENO, buf, len);
 	return len;
 }
+
 /* 
  * puts - writes the string s and a trailing newline to stdout. 
  */

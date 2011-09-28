@@ -76,15 +76,22 @@ typedef struct DIR {
 
 char *strerror(int errnum);
 void perror(const char *s);
+
 void *memset(void *b, int c, size_t len);
 void *memmove(void *dst, const void *src, size_t len);
 void *memcpy(void *dst, const void *src, size_t len);
+
 char *strcpy(char *dest, const char *src);
 char *strncpy(char *dest, const char *src, size_t n);
+char *strchr(const char *s, int ch);
 size_t strlen(const char *s);
 int strcmp(const char *s1, const char *s2);
 int strncmp(const char *s1, const char *s2, size_t n);
 char *strncat(char *dest, const char *src, size_t n);
+char *strpbrk(char *s, char *accept);
+char *strtok(char *s, char *delim);
+size_t strspn(char *s, char *accept);
+
 int vsnprintf(char *str, size_t size, const char *format, va_list ap);
 int snprintf(char *str, size_t size, const char *format, ...);
 int kprintf(const char *format, ...);

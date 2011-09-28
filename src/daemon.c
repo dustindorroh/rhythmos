@@ -34,11 +34,11 @@ int main(int argc, char** argv)
 	/* If we got a good PID, then
 	   we can exit the parent process. */
 	if (pid == 0) {
-		printf("child pid = %d\n",pid);
 		printf("child pid: %d\n",getpid());
 	}
 	if (pid > 0) {
-		printf("parent pid: %d\n",pid);
+		//printf("child pid: %d\n",pid);
+		printf("parent pid: %d\n",getpid());
 		exit(0);
 	}
 	

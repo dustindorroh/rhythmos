@@ -9,6 +9,67 @@
 #include "keyboard.h"
 
 #define MAX_ARGS 32
+#define TRUE 1
+#define FALSE 0
+
+
+char *rm_chars(char *src, char *key)
+{
+	char *dest;
+	size_t len_src;
+	size_t len_key;
+	int found;
+	int i = 0;
+	int j = 0;
+	int k = 0;
+
+	len_src = strlen(src);
+	len_key = strlen(key);
+
+	/* Allocate memory for the destination and initialise it */
+	dest = (char *)malloc(sizeof(char) * len_src + 1);
+	
+	if (NULL == dest) {
+		printf("Unable to allocate memory\n");
+		return dest;
+	}
+
+	memset(dest, 0, sizeof(char) * len_src + 1);
+
+		for (i = 0; i < len_src; i++) {
+			found = FALSE;
+			for (j = 0; j < len_key; j++) {
+				if (((src[i] == key[j]) && (src[i+1] != key[j])) || ((src[i] != key[j]) && (src[i+1] == key[j])))
+					found = TRUE;
+			}
+
+			/* Copy the character if it was NOT found in the key */
+			if (FALSE == found) {
+				dest[k] = src[i];
+				k++;
+			}
+		}
+	return (dest);
+}
+
+char *rm_consecutive_chars( char *src, char *key )
+{
+	int found;
+	int i;
+	char *dest = (char *)malloc(sizeof(char) * strlen(src) + 1);
+	strcpy(dest,src);
+	do {
+		found = FALSE;
+		for (i = 0; i < strlen(dest); i++) {
+			if (dest[i] == key) {
+				found = TRUE;
+				dest = rm_chars( dest, key );
+			}
+		}
+	} while (found == TRUE);
+	
+	return (dest);
+}
 
 int parse_command(char *line, char **argv, int max)
 {
@@ -57,11 +118,12 @@ void process_line(char *line, int *done)
 	int pos;
 	int tpos = 0;
 	int len = strlen(line);
-	char * tline = (char *)malloc(BUFSIZE);
+	char *tline = (char *)malloc(BUFSIZE);
 	char *argv[MAX_ARGS + 1];
 	
 	// = malloc(rlen * sizeof(char));
-
+	
+/*
 	for (pos = 0; pos <= len; pos++) {
 		if((BACKSPACE == line[pos+1]) && (BACKSPACE == line[pos+2])) {
 			pos--;
@@ -94,8 +156,9 @@ void process_line(char *line, int *done)
 
 	memset(line, 0, len * sizeof(char));
 	memmove(line,tline,tpos);
+*/
+	line = rm_consecutive_chars(line, "\b");
 
-	
 	/* Extract the space-separated tokens from the command line  */
 	int argc = parse_command(line, argv, MAX_ARGS);
 	argv[argc] = NULL;	/* so we can pass it to execve() */
@@ -129,6 +192,8 @@ void process_line(char *line, int *done)
 				printf("SHELL VARIABLE DETECTED: %s",argv[i]);
 				if (argv[i][1] == '$') {
 					printf("%d", getpid());
+				} else if (strcmp(argv[i],"$line")){
+					printf("buf:%s\n",line);
 				}
 			}
 		}

@@ -75,7 +75,7 @@ void write_to_screen(const char *data, unsigned int count)
 		 * untill the cursor is against the edge */
 			
 			xpos--;  /* Back the cursor up then display if */			
-			screen[ypos * SCREEN_WIDTH + xpos].c = NULL;
+			screen[ypos * SCREEN_WIDTH + xpos].c = (int) NULL;
 			
 		} else {
 			/* normal character */
@@ -90,6 +90,7 @@ void write_to_screen(const char *data, unsigned int count)
 			scroll();
 		}
 	}
+		
 	move_cursor(xpos, ypos);
 }
 

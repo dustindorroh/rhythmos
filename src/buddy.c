@@ -218,7 +218,7 @@ void buddy_free(memarea * ma, void *ptr)
 		return;
 
 	/*
-	 * Verify that the memory to free is within the correct memory reange 
+	 * Verify that the memory to free is within the correct memory range 
 	 */
 	assert(((char *)ptr >= ma->mem)
 	       && (char *)ptr < ma->mem + (1 << ma->upper));

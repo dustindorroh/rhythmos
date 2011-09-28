@@ -10,7 +10,8 @@
 /*
  * Memory 
  */
-#define NULL                 0
+//#define NULL                 0
+#define NULL		     ((void *)0)
 #define MB                   1048576
 #define KB                   1024
 #define BUFSIZE              1024
