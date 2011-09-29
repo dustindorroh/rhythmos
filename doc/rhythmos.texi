@@ -395,12 +395,13 @@ The @command{`make boot'} target executes the build script
 @file{mk_boot_image.sh} located in @file{src}, the project's source
 directory.
 
-In order to run the kernel, it’s necessary to use a program called a
-boot loader. This is the first thing that runs when a computer starts,
-and is responsible for loading the kernel file into memory and
-instructing the processor to start executing it. A boot loader is placed
-right at the very beginning of a disk, which is where the computer looks
-for an operating system as soon as it starts.
+
+In order to run the kernel, it’s necessary to use a boot loader. This is
+the first thing that runs when a computer starts, and is responsible for
+loading the kernel file into memory and instructing the processor to
+start executing it. A boot loader is placed right at the very beginning
+of a disk, which is where the computer looks for an operating system as
+soon as it starts.
 
 The @file{grub.img} is the GRUB image that we will as are
 bootloader. First we @file{mk_boot_image.sh} makes sure to delete the
