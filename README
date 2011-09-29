@@ -1,0 +1,59 @@
+RhythmOS README
+
+*** CONFIGURE ***
+From the top level project directory execute the configure script.
+
+$ ./configure
+
+Install any missing programs that configure recommends.  Build After
+configure has run a Makefile will be generated. From the top level
+project directory run make.
+
+$ make
+
+*** RUNNING ***
+If you just want to run it and don’t care how it does it then type:
+
+$ make run
+
+Rhythmos can be simulated with QEMU a couple of different ways:
+
+1. Using QEMU as the bootloader. Pass QEMU the built kernel image
+   src/kernel.img and the file system image src/filesystem.img.
+
+   $ qemu -kernel src/kernel.img -initrd src/filesystem.img
+
+2. Build a bootable floppy image that uses grub as the bootloader. There
+   is a one already created for you in the source tree. Just pass QEMU
+   the floppy image:
+
+   $ qemu -fda src/grub.img
+
+   The run target also boots this way, but it first creates a fresh
+   image before booting.
+
+To regenerate the grub.img because the ramdisk and/or the the kernel
+image was updated the grub.img make target will do this for you.  
+
+$ make grub.img
+
+
+
+ GENERAL BUILD TARGETS:
+
+       make - compile and link the kernel image and utils
+       make fs   - build filesystem image
+       make boot - build grub bootloader image
+       make run  - run kernel in qemu
+       make clean- clean the project
+
+ SPECIFIC BUILD TARGETS:
+
+       make kernel.img
+       make filesystem.img
+       make grub.img
+
+ QEMU EXAMPLES:
+
+       qemu -kernel src/kernel.img -initrd src/filesystem.img
+       qemu -fda src/grub.img

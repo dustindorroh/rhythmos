@@ -65,7 +65,8 @@ echo \
    Async Execution: ${async_exec}
 
  Now type 'make @<:@target@:>@'
- Below are the build targets:
+
+ General build targets:
 
        make - compile and link the kernel image and utils
        make fs   - build filesystem image
@@ -73,5 +74,24 @@ echo \
        make run  - run kernel in qemu
        make clean- clean the project
 
+ Specific build targets:
+
+       make kernel.img
+       make filesystem.img
+       make grub.img
+
+ QEMU Examples:
+
+       qemu -kernel src/kernel.img -initrd src/filesystem.img
+       qemu -fda src/grub.img
+
+ Generate Documentation:
+
+       rhythmos.info
+       rhythmos.html
+       rhythmos.dvi
+       rhythmos.pdf
+       standards.pdf
+       
 Read the README and the INSTALL files for more info.
 --------------------------------------------------"
