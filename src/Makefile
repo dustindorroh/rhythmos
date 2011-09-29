@@ -75,13 +75,21 @@ default: \
 
 grub: |boot
 
+grub.img: |boot
+
+fdimage:|boot
+
 boot: default fs
 	./mk_boot_image.sh
+
+filesystem.img: |fs
 
 fs: default
 	./mkfstree.sh
 	cp $(COREUTILS) $(TESTS) $(FILE_SYSTEM_BIN)
 	./mk_filesystem_image.sh
+
+
 
 fstool: fstool.c filesystem.c filesystem.h
 	$(CC) $(HOST_CFLAGS) -DUSE_UNIXPROC -DUSERLAND -Wall -o fstool fstool.c filesystem.c

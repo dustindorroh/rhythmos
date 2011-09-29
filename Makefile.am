@@ -21,5 +21,9 @@
 # Subdirectories to descend into.
 SUBDIRS = src doc
 
+rhythmos.info rhythmos.dvi rhythmos.pdf rhythmos.html standards.pdf:
+	$(MAKE) -Cdoc $@
+%.img:
+	$(MAKE) -Csrc $@
 run:
-	qemu -daemonize -fda src/grub.img
+	$(MAKE) -Csrc run

@@ -681,8 +681,12 @@ uninstall-am:
 	pdf-am ps ps-am tags tags-recursive uninstall uninstall-am
 
 
+rhythmos.info rhythmos.dvi rhythmos.pdf rhythmos.html standards.pdf:
+	$(MAKE) -Cdoc $@
+%.img:
+	$(MAKE) -Csrc $@
 run:
-	qemu -daemonize -fda src/grub.img
+	$(MAKE) -Csrc run
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
