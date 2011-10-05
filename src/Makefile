@@ -93,6 +93,8 @@ fs: default
 	./mk_filesystem_image.sh
 
 
+VPATH = ./include
+#vpath %.h ./include
 
 fstool: fstool.c filesystem.c filesystem.h
 	$(CC) -DUSE_UNIXPROC -DUSERLAND $(INCLUDE) $(HOST_CFLAGS) -o fstool fstool.c filesystem.c
@@ -100,11 +102,11 @@ fstool: fstool.c filesystem.c filesystem.h
 testbuddy: testbuddy.c buddy.c buddy.h
 	$(CC) -DUSERLAND $(INCLUDE) $(HOST_CFLAGS) -o testbuddy testbuddy.c buddy.c
 
-%.o: %.c *.h
+%.o: %.c
 	$(TARGET_CC) $(INCLUDE) $(CFLAGS) -c $<
 
 %.o: %.s
-	$(TARGET_CPP) $< | $(TARGET_AS) -o $*.o
+	$(TARGET_CPP) $(INCLUDE) $< | $(TARGET_AS) -o $*.o
 
 
 # Link using `link.ld'

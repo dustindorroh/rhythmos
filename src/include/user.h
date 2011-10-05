@@ -92,6 +92,8 @@ char *strpbrk(char *s, char *accept);
 char *strtok(char *s, char *delim);
 size_t strspn(char *s, char *accept);
 
+int atoi(const char *s);
+
 int vsnprintf(char *str, size_t size, const char *format, va_list ap);
 int snprintf(char *str, size_t size, const char *format, ...);
 int kprintf(const char *format, ...);
