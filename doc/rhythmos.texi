@@ -126,7 +126,8 @@ This manual is for @code{RhythmOS} (version @value{VERSION},
 @value{UPDATED}), which is a an attempt at a barebones @sc{unix}-like
 kernel. This document intends to cover the how to build, use, and
 develop on Rhythmos as well as explain in depth some of the kernel
-internals.
+internals. For up to date news check the project home which is located
+at @uref{http://code.google.com/p/rhythmos/}
 
 @menu
 * RhythmOS Features::           
@@ -391,38 +392,68 @@ be located @file{src/filesystem.img}.
 @unnumberedsubsec Bootloader Image
 @cindex Bootloader Image
 
-The @command{`make boot'} target executes the build script
-@file{mk_boot_image.sh} located in @file{src}, the project's source
-directory.
-
-
 In order to run the kernel, it’s necessary to use a boot loader. This is
 the first thing that runs when a computer starts, and is responsible for
 loading the kernel file into memory and instructing the processor to
-start executing it. A boot loader is placed right at the very beginning
-of a disk, which is where the computer looks for an operating system as
-soon as it starts.
+start executing it.
 
-The @file{grub.img} is the GRUB image that we will as are
-bootloader. First we @file{mk_boot_image.sh} makes sure to delete the
-old kernel image and filesystem image from the GRUB image.
+The @file{grub.img} is the @acronym{GRUB} image that we will as are
+bootloader. This file contains our kernel image and our file system
+image.
 
 @example
-$ mdel -i grub.img ::kernel.img || true
-$ mdel -i grub.img ::filesystem.img || true
+$ mkdir floppy
+$ sudo mount src/grub.img floppy
+$ tree floppy/
+floppy/
+|-- boot
+|   `-- grub
+|       |-- fat_stage1_5
+|       |-- menu.lst
+|       |-- stage1
+|       `-- stage2
+|-- filesystem.img
+`-- kernel.img
+
+2 directories, 6 files
 @end example
 
-Lastly @file{mk_boot_image.sh} writes the kernel image
-(@file{kernel.img}) and filesystem image (@file{kernel.img}) data to the
-GRUB image @file{grub.img}.
+The @file{menu.lst} contains the menu settings for @acronym{GRUB} along
+with the boot commands for each entry.
 
 @example
+$ cat floppy/boot/grub/menu.lst
+timeout 5
+title RhythmOS
+root (fd0)
+kernel /kernel.img
+modulenounzip (fd0)/filesystem.img
+
+$ sudo mount src/grub.img floppy
+@end example
+
+If you can't mount @file{grub.img} to edit it this is OK because the
+@file{grub.img} that comes with the source is already formated and for
+updating the image we use @uref{http://www.gnu.org/s/mtools/, Mtools}
+which doesn't require special permissions. See below for details...
+
+Using @file{mk_boot_image.sh} makes sure to delete the old kernel image
+and filesystem image from the @acronym{GRUB} image. It then writes the
+kernel image (@file{kernel.img}) and filesystem image
+(@file{kernel.img}) data to the GRUB image @file{grub.img}.
+
+@example
+# Delete old images
+$ mdel -i grub.img ::kernel.img || true
+$ mdel -i grub.img ::filesystem.img || true
+
+# Copy updated images
 $ mcopy -i grub.img kernel.img :: || exit 1
 $ mcopy -i grub.img filesystem.img :: || exit 1
 @end example
 
-
-
+The @command{`make boot'} target executes @file{mk_boot_image.sh} for
+you.
 
 @node Running RhythmOS, Programming the kernel, Building RhythmOS, Top
 @chapter Running RhythmOS
@@ -440,6 +471,13 @@ This same command can also be run through the @command{make} target
 @example
 @code{make run}
 @end example
+
+To run without using the @file{grub.img} you can pass the kernel image
+and filesystem image seperatly to QEMU.
+@example
+$ qemu -kernel src/kernel.img -initrd src/filesystem.img
+@end example
+
 
 @node Programming the kernel, Multitasking, Running RhythmOS, Top
 @chapter Programming the kernel
@@ -574,20 +612,22 @@ List of all the syscalls RhythmOS has available:
 @node  Filesystems, Reporting bugs, I/O, Top
 @chapter Filesystems
 
-The contents of the root filesystem must be adequate to @emph{boot}, @emph{restore},
-and/or @emph{recover} the system.
+The contents of the root filesystem must be adequate to @emph{boot},
+@emph{restore}, and/or @emph{recover} the system.
 
 @itemize
-@bullet{To @emph{boot} a system, enough must be present on the root partition to mount
-other filesystems. This includes utilities, configuration, boot loader
-information, and other essential start-up data.}
+@bullet{To @emph{boot} a system, enough must be present on the root
+partition to mount other filesystems. This includes utilities,
+configuration, boot loader information, and other essential start-up
+data.}
 
-@bullet{For the @emph{recovery} of a system, utilities are needed by the user
-to diagnose and reconstruct the damaged system; these utilities need
-be present on the root filesystem.}
+@bullet{For the @emph{recovery} of a system, utilities are needed by the
+user to diagnose and reconstruct the damaged system; these utilities
+need be present on the root filesystem.}
 
-@bullet{To @emph{restore} a system, those utilities needed to restore from system backups
-(on floppy, tape, etc.) must be present on the root filesystem.}
+@bullet{To @emph{restore} a system, those utilities needed to restore
+from system backups (on floppy, tape, etc.) must be present on the root
+filesystem.}
 @end itemize
 
 See
