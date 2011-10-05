@@ -3,8 +3,8 @@
  *      
  *      Dustin Dorroh <ddorroh@aplopteng.com>
  */
-#include "kernel.h"
-#include "filesystem.h"
+#include <kernel.h>
+#include <filesystem.h>
 
 extern char *filesystem;
 extern process *current_process;

@@ -4,7 +4,7 @@
  *      Copyright 2011 Dustin Dorroh <dustindorroh@gmail.com>
  */
 
-#include "kernel.h"
+#include <kernel.h>
 
 #define IDLE_STACK_SIZE 4096
 

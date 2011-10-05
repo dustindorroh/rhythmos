@@ -3,7 +3,7 @@
  *      
  *      Dustin Dorroh <ddorroh@aplopteng.com>
  */
-#include "kernel.h"
+#include <kernel.h>
 
 /*
  * The functions in this file are mainly concerned with setting up interrupt

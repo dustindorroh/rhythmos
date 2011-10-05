@@ -5,8 +5,7 @@
  */
 
 //#include <stdio.h>
-#include "constants.h"
-#include "user.h"
+#include <user.h>
 
 int main(int argc, char **argv)
 {

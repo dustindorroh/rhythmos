@@ -4,9 +4,9 @@
  *      Copyright 2011 Dustin Dorroh <dustindorroh@gmail.com>
  */
 
-#include "kernel.h"
-#include "filesystem.h"
-#include "keyboard.h"
+#include <kernel.h>
+#include <filesystem.h>
+#include <keyboard.h>
 
 screenchar *screen = (screenchar *) VIDEO_MEMORY;
 extern char kbdmap[128];

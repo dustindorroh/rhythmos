@@ -3,16 +3,17 @@
  *      
  *      Dustin Dorroh <ddorroh@aplopteng.com>
  */
-#include "constants.h"
+#include <constants.h>
 #ifdef USERLAND
 #include <errno.h>
 #include <string.h>
 #include <stdio.h>
 void kprintf(const char *format, ...);
 #else
-#include "kernel.h"
+
+#include <kernel.h>
 #endif
-#include "filesystem.h"
+#include <filesystem.h>
 
 /*
  * lookup

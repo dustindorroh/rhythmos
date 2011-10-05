@@ -13,7 +13,7 @@ AS = as
 # Target defs
 ARCH = $(shell arch)
 ifeq ($(ARCH),x86_64)
-HOST_CFLAGS = 
+HOST_CFLAGS = -Wall
 TARGET_CC = i386-elf-gcc
 TARGET_CPP = i386-elf-cpp
 TARGET_LD = i386-elf-ld
@@ -25,6 +25,9 @@ TARGET_CPP = cpp
 TARGET_LD = ld
 TARGET_AS = as
 endif
+
+INCLUDE = -Iinclude
+CFLAGS = -m32 -fno-stack-protector -Wall -nostdinc -fno-builtin
 
 PRJ_ROOT ?= ..
 KERNEL_IMG = kernel.img
@@ -92,13 +95,13 @@ fs: default
 
 
 fstool: fstool.c filesystem.c filesystem.h
-	$(CC) $(HOST_CFLAGS) -DUSE_UNIXPROC -DUSERLAND -Wall -o fstool fstool.c filesystem.c
+	$(CC) -DUSE_UNIXPROC -DUSERLAND $(INCLUDE) $(HOST_CFLAGS) -o fstool fstool.c filesystem.c
 
 testbuddy: testbuddy.c buddy.c buddy.h
-	$(CC) $(HOST_CFLAGS) -DUSERLAND -Wall -o testbuddy testbuddy.c buddy.c
+	$(CC) -DUSERLAND $(INCLUDE) $(HOST_CFLAGS) -o testbuddy testbuddy.c buddy.c
 
 %.o: %.c *.h
-	$(TARGET_CC) -m32 -fno-stack-protector -Wall -nostdinc -fno-builtin -c $<
+	$(TARGET_CC) $(INCLUDE) $(CFLAGS) -c $<
 
 %.o: %.s
 	$(TARGET_CPP) $< | $(TARGET_AS) -o $*.o

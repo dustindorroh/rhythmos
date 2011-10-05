@@ -4,7 +4,7 @@
  *      Dustin Dorroh <ddorroh@aplopteng.com>
  */
 
-#include "kernel.h"
+#include <kernel.h>
 
 /*
  * Page table management

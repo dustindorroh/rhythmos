@@ -3,16 +3,16 @@
  *      
  *      Copyright 2011 Dustin Dorroh <dustindorroh@gmail.com>
  */
-#include "constants.h"
+#include <constants.h>
 #ifdef USERLAND
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
 void kprintf(const char *format, ...);
 #else
-#include "kernel.h"
+#include <kernel.h>
 #endif
-#include "buddy.h"
+#include <buddy.h>
 
 /*
  * Helper macros for accessing the blocks array 

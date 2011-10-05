@@ -3,8 +3,8 @@
  *      
  *      Dustin Dorroh <ddorroh@aplopteng.com>
  */
-#include "constants.h"
-#include "user.h"
+
+#include <user.h>
 
 int find(const char *path)
 {

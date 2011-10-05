@@ -4,9 +4,9 @@
  *      Copyright 2011 Dustin Dorroh <dustindorroh@gmail.com>
  */
 
-#include "constants.h"
-#include "user.h"
-#include "keyboard.h"
+
+#include <user.h>
+#include <keyboard.h>
 
 #define MAX_ARGS 32
 

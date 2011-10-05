@@ -4,7 +4,7 @@
  *      Dustin Dorroh <ddorroh@aplopteng.com>
  */
 
-#include "kernel.h"
+#include <kernel.h>
 
 /*
  * This file contains routines to set up the CPU's segment table so that we

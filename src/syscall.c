@@ -3,8 +3,8 @@
  *      
  *      Dustin Dorroh <ddorroh@aplopteng.com>
  */
-#include "kernel.h"
-#include "filesystem.h"
+#include <kernel.h>
+#include <filesystem.h>
 
 /*
  * Prototypes for system call handlers defined in other files 

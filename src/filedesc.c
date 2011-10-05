@@ -3,7 +3,7 @@
  *      
  *      Dustin Dorroh <ddorroh@aplopteng.com>
  */
-#include "kernel.h"
+#include <kernel.h>
 
 extern process *current_process;
 extern process processes[MAX_PROCESSES];

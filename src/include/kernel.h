@@ -6,11 +6,11 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
-#include "constants.h"
-#include "user.h"
-#include "filesystem.h"
-#include "buddy.h"
-#include "version.h"
+#include <constants.h>
+#include <user.h>
+#include <filesystem.h>
+#include <buddy.h>
+#include <version.h>
 
 /*
  * Basic system data structures 

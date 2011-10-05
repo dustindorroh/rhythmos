@@ -4,7 +4,7 @@
  *      Copyright 2011 Dustin Dorroh <dustindorroh@gmail.com>
  */
 
-#include "kernel.h"
+#include <kernel.h>
 
 char *error_names[15] = {
 	"Success",

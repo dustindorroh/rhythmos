@@ -4,8 +4,8 @@
  *      Dustin Dorroh <ddorroh@aplopteng.com>
  */
 
-#include "constants.h"
-#include "user.h"
+
+#include <user.h>
 
 #define TAG_TEST           1
 #define TAG_PING           2

@@ -4,7 +4,7 @@
  *      Copyright 2011 Dustin Dorroh <dustindorroh@gmail.com>
  */
 
-#include "constants.h"
+#include <constants.h>
 
 #ifndef USER_H
 #define USER_H
