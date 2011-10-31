@@ -3,7 +3,7 @@
  */
 #include <stdlib.h>
 #include <string.h>
-#include "list.h"
+#include <list.h>
 
 /* 
  * list_init

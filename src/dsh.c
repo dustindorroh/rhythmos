@@ -2,16 +2,28 @@
  *      dsh.c
  *      
  *      Copyright 2011 Dustin Dorroh <dustindorroh@gmail.com>
+ * 
+ *      This program is free software: you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation, either version 3 of the License, or
+ *      (at your option) any later version.
+ *      
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
+ *      
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "constants.h"
-#include "user.h"
-#include "keyboard.h"
+#include <user.h>
+#include <keyboard.h>
 
 #define MAX_ARGS 32
 #define TRUE 1
 #define FALSE 0
-
+#define DEFAULT_PATH "/bin"
 
 char *rm_chars(char *src, char *key)
 {
@@ -192,15 +204,17 @@ void process_line(char *line, int *done)
 				printf("SHELL VARIABLE DETECTED: %s",argv[i]);
 				if (argv[i][1] == '$') {
 					printf("%d", getpid());
-				} else if (strcmp(argv[i],"$line")){
+				} else if (strcmp(argv[i],"$line")==0){
 					printf("buf:%s\n",line);
-				}
+				} else if (strcmp(argv[i],"$PATH")==0){
+					printf("%s\n",DEFAULT_PATH);
+				}			
 			}
 		}
 		/* Run a program */
 		char cmdpath[PATH_MAX];
 		struct stat statbuf;
-		snprintf(cmdpath, PATH_MAX, "/bin/%s", argv[0]);
+		snprintf(cmdpath, PATH_MAX, "%s/%s", DEFAULT_PATH, argv[0]);
 		if (0 == stat(cmdpath, &statbuf)) {
 			run_program(cmdpath, argv);
 			return;

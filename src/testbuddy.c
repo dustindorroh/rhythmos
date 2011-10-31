@@ -3,8 +3,8 @@
  *      
  *      Dustin Dorroh <ddorroh@aplopteng.com>
  */
-#include "constants.h"
-#include "buddy.h"
+#include <constants.h>
+#include <buddy.h>
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
