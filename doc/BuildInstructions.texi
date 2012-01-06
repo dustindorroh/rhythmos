@@ -1,0 +1,56 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@setfilename BuildInstructions
+
+
+Featured,Phase-Deploy,Phase-Implementation How to build Rhythmos from sources.@settitle Download
+@c %**end of header
+
+@node Top
+
+ Use git to clone a copy of the source tree. 
+@example$ git clone http://code.google.com/p/rhythmos/@end example
+ Go to the @uref{http://code.google.com/p/rhythmos/source/checkout, RhythmOS source} page for more info.@settitle Configure
+@c %**end of header
+
+@node Top
+
+ From the top level project directory execute the @code{configure} script. 
+@example$ ./configure@end example
+ Install any missing programs that @code{configure} recommends. @settitle Build
+@c %**end of header
+
+@node Top
+
+ After @code{configure} is run a @code{Makefile} is generated. From the top level project directory run 
+@examplemake'.@end example
+
+
+$ make@settitle Running
+@c %**end of header
+
+@node Top
+
+ If you just want to run it and don't care how it does it then type: 
+@example$ make run@end example
+
+
+Rhythmos can be simulated with QEMU a couple of different ways:
+
+@strong{1.} Using QEMU as the bootloader. Pass QEMU the built kernel image @code{src/kernel.img} and the file system image @code{src/filesystem.img}. 
+@example$ qemu -kernel src/kernel.img -initrd src/filesystem.img@end example
+
+
+@strong{2.} Build a bootable floppy image that uses grub as the bootloader. There is a one already created for you in the source tree. Just pass QEMU the floppy image: directly use the command below. 
+@example$ qemu -fda src/grub.img@end example
+ The @code{make run} target also boots using a floppy image with grub as the bootlader, but it first creates a fresh image before booting.
+
+To regenerate the @code{grub.img} because the ramdisk and/or the the kernel image was updated the 
+@examplegrub.img' make target will do this for you.@end example
+
+
+$ make grub.img Then use method 2 to boot from it.
+
+See documentation in the source for more specifics.
+@contents
+@bye

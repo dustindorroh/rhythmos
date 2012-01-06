@@ -1,0 +1,103 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@setfilename Toolchain
+
+
+Build a RhythmOS Toolchain
+
+Featured,Phase-Implementation,Phase-Support@settitle Introduction
+@c %**end of header
+
+@node Top
+
+ If your native architecture is x86 then you will most likely already have a toolchain that will work for RhythmOS. If your architecture is something else you will have to build an toolchain to cross compile to x86. @settitle Find your architecture
+@c %**end of header
+
+@node Top
+
+ You can find your architecture in Linux from one of the following commands:
+@example$ arch
+x86_64@end example
+
+@example$ lscpu | grep Arch
+Architecture:          x86_64@end example
+
+@example$ uname -m
+x86_64@end example
+@settitle Set up build environment
+@c %**end of header
+
+@node Top
+
+
+
+Export build variables 
+@example$ export PREFIX=/usr/local/cross $ export TARGET=i386-elf@end example
+
+
+Create build directories for gcc binutils and newlibc 
+@example$ mkdir -p build/gcc,binutils,newlib $ sudo mkdir /usr/local/cross@end example
+
+
+Download and extract Binutils and gcc and newlibc 
+@example$ wget 'http://ftp.gnu.org/gnu/binutils/binutils-2.21.1a.tar.bz2' $ wget 'http://ftp.gnu.org/gnu/gcc/gcc-4.6.2/gcc-4.6.2.tar.bz2' $ wget 'ftp://sources.redhat.com/pub/newlib/newlib-1.20.0.tar.gz' $ tar xjvf binutils-2.21.1a.tar.bz2  $ tar xjvf gcc-4.6.2.tar.bz2  $ tar xzvf newlib-1.20.0.tar.gz@end example
+
+
+Download gmp mpfr and mpc required by gcc 
+@example$ wget 'ftp://ftp.gmplib.org/pub/gmp-5.0.2/gmp-5.0.2.tar.bz2' $ wget 'http://www.mpfr.org/mpfr-current/mpfr-3.1.0.tar.bz2' $ wget 'http://www.multiprecision.org/mpc/download/mpc-0.9.tar.gz'@end example
+
+
+Extract gmp mpfr and mpc into the gcc directory so that gcc will build them automatically 
+@example$ cd gcc-4.6.2 $ tar xjvf ../gmp-5.0.2.tar.bz2 && mv gmp-5.0.2/ gmp $ tar xjvf ../mpfr-3.1.0.tar.bz2  && mv mpfr-3.1.0/ mpfr $ tar xzvf ../mpc-0.9.tar.gz  && mv mpc-0.9/ mpc $ cd ..@end example
+@settitle Build
+@c %**end of header
+
+@node Top
+
+@settitle Binutils
+@c %**end of header
+
+@node Top
+
+ configure binutils 
+@example$ cd build/binutils/
+$ ../../binutils-2.21.1/configure --target=$TARGET --prefix=$PREFIX --disable-nls@end example
+
+
+Make and install binutils 
+@example$ make all $ sudo make install $ cd ../..@end example
+@settitle GCC
+@c %**end of header
+
+@node Top
+
+ Setup environment 
+@example$ export PATH=$PATH:$PREFIX/bin@end example
+
+
+configure gcc 
+@example$ cd build/gcc $ ../../gcc-4.6.2/configure  --target=$TARGET --prefix=$PREFIX --disable-nls --enable-languages=c --without-headers@end example
+
+
+Make and install gcc 
+@example$ make all-gcc  $ sudo make install-gcc $ cd ../..@end example
+@settitle Newlib
+@c %**end of header
+
+@node Top
+
+
+
+configure newlib 
+@example$ cd build/newlib $ ../../newlib-1.20.0/configure --target=$TARGET --prefix=$PREFIX@end example
+
+
+Make and install newlib 
+@example$ make all $ sudo make install@end example
+
+
+Run command below if @code{sudo make install} cant find utils in @code{/usr/cross/bin} 
+@example$ sudo ln -s /usr/local/cross/bin/i386-elf-* /usr/local/bin $ sudo make install@end example
+
+@contents
+@bye

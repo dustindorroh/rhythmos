@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>BuildInstructions</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+    <p class="labels">Featured,Phase-Deploy,Phase-Implementation</p>
+How to build Rhythmos from sources.<h2>Download</h2>
+Use git to clone a copy of the source tree.
+<pre>$ git clone http://code.google.com/p/rhythmos/</pre>
+Go to the <a href="http://code.google.com/p/rhythmos/source/checkout">RhythmOS source</a> page for more info.<h2>Configure</h2>
+From the top level project directory execute the <code>configure</code> script.
+<pre>$ ./configure</pre>
+Install any missing programs that <code>configure</code> recommends. 
+<h2>Build</h2>
+After <code>configure</code> is run a <code>Makefile</code> is generated. From the top level project directory run <pre>make'.<p>$ make</pre></p><h2>Running</h2>
+If you just want to run it and don't care how it does it then type:
+<pre>$ make run</pre><p>Rhythmos can be simulated with QEMU a couple of different ways:</p><p><strong>1.</strong> Using QEMU as the bootloader. Pass QEMU the built kernel image <code>src/kernel.img</code> and the file system image <code>src/filesystem.img</code>. <pre>$ qemu -kernel src/kernel.img -initrd src/filesystem.img</pre></p><p><strong>2.</strong> Build a bootable floppy image that uses grub as the bootloader. There is a one already created for you in the source tree. Just pass QEMU the floppy image: directly use the command below. <pre>$ qemu -fda src/grub.img</pre> The <code>make run</code> target also boots using a floppy image with grub as the bootlader, but it first creates a fresh image before booting.</p><p>To regenerate the <code>grub.img</code> because the ramdisk and/or the the kernel image was updated the <pre>grub.img' make target will do this for you.</p><p>$ make grub.img</pre> Then use method 2 to boot from it.</p><p>See documentation in the source for more specifics.</p>
+  </body>
+</html>

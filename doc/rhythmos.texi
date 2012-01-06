@@ -19,7 +19,7 @@ This is Edition @value{EDITION}, last updated @value{UPDATED},
 of @cite{RhythmOS Reference Manual}, 
 for @code{RhythmOS}, Version @value{VERSION}.
 
-Copyright @copyright{} 2011 Dustin Dorroh (@email{dustindorroh@@gmail.com})
+Copyright @copyright{} 2012 Dustin Dorroh (@email{dustindorroh@@gmail.com})
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -65,6 +65,7 @@ which is a an attempt at a barebones @sc{unix}-like kernel
 
 @menu
 * Overview::                    General purpose and information.
+* Toolchain Setup::             Build a RhythmOS Toolchain
 * Building RhythmOS::           Steps to compile and build RhythmOS.
 * Running RhythmOS::            Steps to run RhythmOS
 * Programming the kernel::      
@@ -83,6 +84,14 @@ Overview
 
 * RhythmOS Features::           
 * Source Code::                 
+
+Toolchain Setup
+
+* Build Environment::           
+* Source Download::             
+* Binutils::                    
+* GCC::                         
+* C Library::                   
 
 Building RhythmOS
 
@@ -118,7 +127,7 @@ C
 @end detailmenu
 @end menu
 
-@node Overview, Building RhythmOS, Top, Top
+@node Overview, Toolchain Setup, Top, Top
 @chapter Overview
 @cindex Overview
 
@@ -142,7 +151,7 @@ at @uref{http://code.google.com/p/rhythmos/}
 @item
 Small C library
 @item
-Kernel mode and mode user
+Kernel mode and user mode
 @item
 Basic Multitasking through the use of context switches and
  memory protection
@@ -203,8 +212,163 @@ clone the RhythmOS repository.
 @c  @file{src/libc.c}=@file{@env{PRJROOT}/src/libc.c}
 @c @end example
 
+@node Toolchain Setup, Building RhythmOS, Overview, Top
+@chapter Toolchain Setup
+@cindex Toolchain Setup
+Build a RhythmOS Toolchain
 
-@node  Building RhythmOS, Running RhythmOS, Overview, Top
+If your native architecture is x86 then you will most likely already
+have a toolchain that will work for RhythmOS. If your architecture is
+something else you will have to build an toolchain to cross compile to
+x86. 
+
+@settitle Find your architecture
+
+You can find your architecture in Linux from one of the following
+commands:
+
+@example
+$ arch x86_64
+
+$ lscpu | grep Arch
+Architecture:          x86_64
+
+$ uname -m
+x86_64
+@end example
+
+@menu
+* Build Environment::           
+* Source Download::             
+* Binutils::                    
+* GCC::                         
+* C Library::                   
+@end menu
+
+@node Build Environment, Source Download, Toolchain Setup, Toolchain Setup
+@section Build Environment
+@cindex Build Environment
+
+Export build variables 
+@example
+$ export PREFIX=/usr/local/cross 
+$ export TARGET=i386-elf
+@end example
+
+
+Create build directories for gcc binutils and newlibc 
+@example
+$ mkdir -p build/{gcc,binutils,newlib}
+$ sudo mkdir /usr/local/cross
+@end example
+
+@node Source Download, Binutils, Build Environment, Toolchain Setup
+@comment  node-name,  next,  previous,  up
+@section Source Download
+@cindex Source Download
+
+Download and extract Binutils and gcc and newlibc 
+@example
+$ wget http://ftp.gnu.org/gnu/binutils/binutils-2.21.1a.tar.bz2
+$ wget http://ftp.gnu.org/gnu/gcc/gcc-4.6.2/gcc-4.6.2.tar.bz2
+$ wget ftp://sources.redhat.com/pub/newlib/newlib-1.20.0.tar.gz
+$ tar xjvf binutils-2.21.1a.tar.bz2  
+$ tar xjvf gcc-4.6.2.tar.bz2  
+$ tar xzvf newlib-1.20.0.tar.gz
+@end example
+
+Download @acronym{gmp} @acronym{mpfr} and @acronym{mpc} required by @acronym{gcc}
+@example
+$ wget ftp://ftp.gmplib.org/pub/gmp-5.0.2/gmp-5.0.2.tar.bz2
+$ wget http://www.mpfr.org/mpfr-current/mpfr-3.1.0.tar.bz2
+$ wget http://www.multiprecision.org/mpc/download/mpc-0.9.tar.gz
+@end example
+
+Extract @acronym{gmp} @acronym{mpfr} and @acronym{mpc} into the gcc
+directory so that gcc will build them automatically
+@example
+$ cd gcc-4.6.2 
+$ tar xjvf ../gmp-5.0.2.tar.bz2 && mv gmp-5.0.2/ gmp 
+$ tar xjvf ../mpfr-3.1.0.tar.bz2 && mv mpfr-3.1.0/ mpfr 
+$ tar xzvf ../mpc-0.9.tar.gz  && mv mpc-0.9/ mpc 
+$ cd ..
+@end example
+
+@node Binutils, GCC, Source Download, Toolchain Setup
+@comment  node-name,  next,  previous,  up
+@section Binutils
+@cindex Binutils
+
+Configure Binutils 
+@example$ cd build/binutils/
+$ ../../binutils-2.21.1/configure --target=$TARGET \
+                                  --prefix=$PREFIX \
+                                  --disable-nls
+@end example
+
+Make and Install Binutils 
+@example
+$ make all 
+$ sudo make install 
+$ cd ../..
+@end example
+
+
+@node GCC, C Library, Binutils, Toolchain Setup
+@comment  node-name,  next,  previous,  up
+@section GCC
+@cindex GCC
+
+Setup Environment 
+@example
+$ export PATH=$PATH:$PREFIX/bin
+@end example
+
+Configure GCC 
+@example
+$ cd build/gcc 
+$ ../../gcc-4.6.2/configure  --target=$TARGET \
+                             --prefix=$PREFIX \
+                             --disable-nls \
+                             --enable-languages=c \
+                             --without-headers
+@end example
+
+Make And Install GCC 
+@example$ 
+make all-gcc  
+$ sudo make install-gcc 
+$ cd ../..
+@end example
+
+@node C Library,  , GCC, Toolchain Setup
+@comment  node-name,  next,  previous,  up
+@section C Library
+@cindex C Library
+
+Configure Newlib 
+@example
+$ cd build/newlib 
+$ ../../newlib-1.20.0/configure --target=$TARGET \
+                                --prefix=$PREFIX
+@end example
+
+
+Make and Install Newlib 
+@example
+$ make all 
+$ sudo make install
+@end example
+
+
+Run command below if @code{sudo make install} cant find utils in
+@file{/usr/cross/bin}
+@example
+$ sudo ln -s /usr/local/cross/bin/i386-elf-* /usr/local/bin 
+$ sudo make install
+@end example
+
+@node  Building RhythmOS, Running RhythmOS, Toolchain Setup, Top
 @chapter Building RhythmOS
 @cindex Building RhythmOS
 
@@ -461,15 +625,15 @@ you.
 Once the kernel has been copied to the disk image, you can then run it
 under qemu using one of the following commands:
 @example
-@code{qemu -fda src/grub.img}
-@code{qemu -daemonize -fda src/grub.img # daemonize qemu}
-@code{qemu -monitor stdio -fda src/grub.img # output qemu debug on stdio}
+$ qemu -fda src/grub.img
+$ qemu -daemonize -fda src/grub.img       # daemonize qemu
+$ qemu -monitor stdio -fda src/grub.img   # output qemu debug on stdio
 @end example
 
 This same command can also be run through the @command{make} target
 @code{run};
 @example
-@code{make run}
+$make run
 @end example
 
 To run without using the @file{grub.img} you can pass the kernel image
@@ -680,7 +844,7 @@ Variable data
 To report bugs or suggest enhancements for RhythmOS, please send
 electronic mail to @email{dustindorroh@@gmail.com}.
 
-@include gnu.texi
+@c @include gnu.texi
 
 @appendix GNU Free Documentation License
 
