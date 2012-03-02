@@ -13,4 +13,5 @@ mptest
 pwd
 sh
 testbuddy
-
+halt
+Makefile
