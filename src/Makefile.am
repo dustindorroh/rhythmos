@@ -94,7 +94,7 @@ fstool: fstool.c filesystem.c filesystem.h
 	$(HOST_CC) -DUSE_UNIXPROC -DUSERLAND $(INCLUDE) $(HOST_CFLAGS) -o fstool fstool.c filesystem.c
 
 testbuddy: testbuddy.c buddy.c buddy.h
-	$(HOST_CC) -DUSERLAND $(INCLUDE) $(HOST_CFLAGS) -o testbuddy testbuddy.c buddy.c
+	$(HOST_CC) -DUSERLAND $(INCLUDE) -m32 $(HOST_CFLAGS) -o testbuddy testbuddy.c buddy.c
 
 %.o: %.c
 	$(TARGET_CC) $(INCLUDE) $(TARGET_CFLAGS) -c $<
