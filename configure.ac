@@ -12,11 +12,13 @@ AC_CONFIG_SRCDIR([src/main.c])
 
 
 # Checks for programs.
-AC_PROG_CC
+#AC_PROG_CC
 #AC_PROG_INSTALL
 #AC_PROG_RANLIB
 #AM_PROG_CC_C_O
 #AM_PROG_AS
+gl_EARLY
+gl_INIT
 
 AC_CHECK_PROG([QEMU], qemu, qemu, [], [$PATH])
 AC_CHECK_PROG([MKDIR], mkdir, mkdir, [], [$PATH])
@@ -50,7 +52,7 @@ AC_CHECK_HEADERS([unistd.h])
 # Checks for library functions.
 
 AC_CONFIG_FILES([Makefile
-                 src/Makefile])
+		 lib/Makefile])
 AC_OUTPUT
 
 echo \

@@ -4,3 +4,6 @@ config.log
 config.status
 rootfs
 Makefile
+/arg-nonnull.h
+/c++defs.h
+/warn-on-use.h
