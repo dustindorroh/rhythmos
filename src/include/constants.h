@@ -113,6 +113,8 @@
 #define SYSCALL_CHDIR        18
 #define SYSCALL_GETCWD       19
 #define SYSCALL_KILL         20
+#define SYSCALL_HALT         21
+
 
 /*
  * errno values 
