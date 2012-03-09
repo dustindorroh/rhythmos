@@ -19,7 +19,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Subdirectories to descend into.
-SUBDIRS = src doc
+SUBDIRS = doc lib src
+ACLOCAL_AMFLAGS = -I m4
+EXTRA_DIST = m4/gnulib-cache.m4
 
 rhythmos.info rhythmos.dvi rhythmos.pdf rhythmos.html standards.pdf:
 	$(MAKE) -Cdoc $@

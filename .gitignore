@@ -4,6 +4,9 @@ config.log
 config.status
 rootfs
 Makefile
+/arg-nonnull.h
+/c++defs.h
+/warn-on-use.h
 Makefile.in
 configure
 aclocal.m4
