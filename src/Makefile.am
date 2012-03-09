@@ -50,7 +50,7 @@ KERNEL_OBJECTS = \
 USER_OBJECTS = crtso.o libc.o calls.o buddy.o
 
 
-COREUTILS = sh ls cat find pwd echo hello dsh kill halt
+COREUTILS = sh ls cat find pwd echo hello dsh kill halt hlt
 COREUTILS_OBJECTS = $(addsuffix .o, $(COREUTILS))
 
 TESTS = mptest daemon
