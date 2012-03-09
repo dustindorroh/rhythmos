@@ -7,3 +7,7 @@ Makefile
 /arg-nonnull.h
 /c++defs.h
 /warn-on-use.h
+Makefile.in
+configure
+aclocal.m4
+autom4te.cache/

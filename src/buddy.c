@@ -11,27 +11,24 @@
 void kprintf(const char *format, ...);
 #else
 #include <kernel.h>
-#endif
+#endif	/* USERLAND */
 #include <buddy.h>
 
-/*
- * Helper macros for accessing the blocks array 
- */
+/* Helper macros for accessing the blocks array */
 #define get_sizem(_b)    (ma->blocks[(_b)/(1 << ma->lower)].sizem)
 #define is_used(_b)      (ma->blocks[(_b)/(1 << ma->lower)].used)
 #define set_sizem(_b,_s) ma->blocks[(_b)/(1 << ma->lower)].sizem = (_s)
 #define set_used(_b,_u)  ma->blocks[(_b)/(1 << ma->lower)].used = (_u)
 
-/*
- * Minimum granularity for keeping track of blocks. This affects the size of
- * the blocks array in the memarea structure. See the description of buddy_init
- * for further details. Note that this must be at least 2 (i.e. 2^2 = 4 bytes),
- * since we store 4 byte pointers in unused blocks for the free list links. 
+/* Minimum granularity for keeping track of blocks. 
+ * This affects the size of the blocks array in the memarea structure. See
+ * the description of buddy_init for further details. Note that this must
+ * be at least 2 (i.e. 2^2 = 4 bytes),since we store 4 byte pointers in
+ * unused blocks for the free list links.  
  */
 #define DEFAULT_LOWER 8		/* 256 bytes */
 
-/*
- * mforsize
+/* mforsize - measure for the block size
  * 
  * Determine the actual block size to be used for a particular requested size. This
  * is called when the buddy allocator receives a new allocation request, in order
@@ -49,8 +46,7 @@ static unsigned int mforsize(memarea * ma, unsigned int nbytes)
 	return (m >= ma->lower) ? m : ma->lower;
 }
 
-/*
- * get_buddy
+/* get_buddy - get the buddy address for the measured size
  * 
  * Calculate the address of the buddy of a block, for a given size. The reason why
  * we need to know the size is that a given block address can potentially have
@@ -68,8 +64,7 @@ static unsigned int get_buddy(memarea * ma, unsigned int block)
 		return block | (1 << m);
 }
 
-/*
- * add_to_freelist
+/* add_to_freelist - add a block the the free list.
  * 
  * Add the specified block to the free list of the given size. The buddy allocator
  * maintains separate free lists for each size, and the blocks in each free list
@@ -83,8 +78,7 @@ static void add_to_freelist(memarea * ma, unsigned int m, unsigned int block)
 	ma->freelist[m] = block;
 }
 
-/*
- * remove_from_freelist
+/* remove_from_freelist
  * 
  * Remove the specified block from the free list of a particular size. This
  * function must only be called for blocks that definitely exist in the specified
@@ -107,8 +101,7 @@ remove_from_freelist(memarea * ma, unsigned int m, unsigned int block)
 	assert(found);
 }
 
-/*
- * buddy_alloc
+/*! buddy_alloc
  * 
  * Allocate a block of a certain size within the requested memory area. This first
  * rounds up the size to the nearest power of two, and then searches the
@@ -147,7 +140,7 @@ void *buddy_alloc(memarea * ma, unsigned int nbytes)
 			kprintf("Memory exhausted\n");
 #ifndef USERLAND
 			assert(0);
-#endif
+#endif /* USERLAND */
 			return NULL;
 		}
 
@@ -195,8 +188,7 @@ void *buddy_alloc(memarea * ma, unsigned int nbytes)
 	return (void *)(block + (unsigned int)ma->mem);
 }
 
-/*
- * buddy_free
+/* buddy_free
  * 
  * Release a region of memory that has previously been allocated by buddy_alloc.
  * Once this function has been called with a particular pointer, that pointer
@@ -261,8 +253,7 @@ void buddy_free(memarea * ma, void *ptr)
 	add_to_freelist(ma, m, block);
 }
 
-/*
- * buddy_nblocks
+/* buddy_nblocks
  * 
  * Compute the number of blockinfo structures necessary to keep track of a region
  * of memory whose size (in powers of two) is given by sizepow2.
@@ -272,8 +263,7 @@ unsigned int buddy_nblocks(unsigned int sizepow2)
 	return (1 << (sizepow2 - DEFAULT_LOWER));
 }
 
-/*
- * buddy_init
+/* buddy_init
  * 
  * Initialise a memarea structure that is used by the buddy allocator to manage a
  * specific region of memory. The size of the region is specified as a power of
@@ -293,8 +283,7 @@ unsigned int buddy_nblocks(unsigned int sizepow2)
  * is the smallest amount of memory that can be allocated. This value is defined
  * by the DEFAULT_LOWER macro near the top of this file.
  */
-void
-buddy_init(memarea * ma, unsigned int sizepow2, char *membase,
+void buddy_init(memarea * ma, unsigned int sizepow2, char *membase,
 	   blockinfo * blocks)
 {
 	memset(ma, 0, sizeof(memarea));
@@ -311,8 +300,7 @@ buddy_init(memarea * ma, unsigned int sizepow2, char *membase,
 }
 
 #ifndef USERLAND
-/*
- * init_userspace_malloc
+/* init_userspace_malloc - maintain the connections that malloc depends on.
  * 
  * Sets up the data segment of a process for use by malloc. The initial size of
  * the heap is specified here as a power of two, such that if this value is k then
@@ -369,8 +357,7 @@ void init_userspace_malloc()
 	buddy_init(ma, heap_sizep2, heap, blocks);
 }
 
-/*
- * malloc
+/* malloc - handles the memory allocation requests coming in.
  * 
  * This is just a wrapper around buddy_alloc, which passes in the
  * process's own memarea struct, to tell the allocation algorithm
@@ -378,7 +365,6 @@ void init_userspace_malloc()
  * from kmalloc in that the latter allocates memory in the kernel's
  * private area, and can only be used in kernel mode.
  */
-
 void *malloc(unsigned int nbytes)
 {
 	if (!in_user_mode())
@@ -458,8 +444,7 @@ void *realloc(void *ptr, size_t size)
 //}
 
 
-/*
- * free
+/* free
  * 
  * Wrapper around buddy_free, using the process's memarea struct as for malloc
  */
@@ -474,8 +459,7 @@ void free(void *ptr)
 memarea kernel_memarea;
 blockinfo kernel_blocks[(1 << (KERNEL_MEM_SIZEPOW2 - DEFAULT_LOWER))];
 
-/*
- * kmalloc_init
+/* kmalloc_init
  * 
  * Sets up the bookkeeping data for the region of kernel memory set aside for the
  * buddy allocator.
@@ -486,8 +470,7 @@ void kmalloc_init(void)
 		   (char *)KERNEL_MEM_BASE, kernel_blocks);
 }
 
-/*
- * kmalloc
+/* kmalloc
  * 
  * Wrapper around buddy_alloc for kernel memory; works similarly to the malloc
  * wrapper
@@ -500,8 +483,7 @@ void *kmalloc(unsigned int nbytes)
 	return ptr;
 }
 
-/*
- * kmalloc
+/* kmalloc
  * 
  * Wrapper around buddy_free for kernel memory
  */
@@ -510,4 +492,4 @@ void kfree(void *ptr)
 	buddy_free(&kernel_memarea, ptr);
 }
 
-#endif				/* !USERLAND */
+#endif /* USERLAND */

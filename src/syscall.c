@@ -235,6 +235,15 @@ int syscall_kill(pid_t pid)
 	return r;
 }
 
+static inline void __attribute__ ((noreturn))
+syscall_halt (void)
+{
+  while (1)
+    {
+      asm volatile ("hlt");
+    }
+}
+
 /**
  * syscall_send - Sends a message to the specified process.
  * @tag: is an application-defined value indicating the type of the message
@@ -411,6 +420,9 @@ void syscall(regs * r)
 		break;
 	case SYSCALL_KILL:
 		res = syscall_kill(args[0]);
+		break;
+	case SYSCALL_HALT:
+		syscall_halt();
 		break;
 	default:
 		kprintf("Warning: Call to unimplemented system call %d\n",

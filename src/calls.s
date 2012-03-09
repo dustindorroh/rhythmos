@@ -34,6 +34,8 @@ syscall fork        SYSCALL_FORK
 syscall execve      SYSCALL_EXECVE
 syscall waitpid     SYSCALL_WAITPID
 syscall kill        SYSCALL_KILL
+syscall halt        SYSCALL_HALT
+
 
 .globl in_user_mode
 in_user_mode:

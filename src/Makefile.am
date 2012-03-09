@@ -10,24 +10,22 @@ CPP = cpp
 LD = ld
 AS = as
 
+HOST_CC = $(CC)
+HOST_CFLAGS = -Wall
+HOST_CPP = $(CPP)
+HOST_LD = $(LD)
+HOST_AS = $(AS)
+
 # Target defs
-#ARCH = $(shell arch)
-#if ($(ARCH),x86_64)
-#HOST_CFLAGS = -Wall
-#TARGET_CC = i386-elf-gcc
-#TARGET_CPP = i386-elf-cpp
-#TARGET_LD = i386-elf-ld
-#TARGET_AS = i386-elf-as
-#else
-HOST_CFLAGS = -m32
-TARGET_CC = gcc
 TARGET_CPP = cpp
-TARGET_LD = ld
+TARGET_CC = gcc
+TARGET_CFLAGS = -m32 -fno-stack-protector -Wall -nostdinc -fno-builtin
 TARGET_AS = as
-#endif
+TARGET_AS_FLAGS = --32
+TARGET_LD = ld
+TARGET_LD_FLAGS = -m elf_i386
 
 INCLUDE = -Iinclude
-CFLAGS = -m32 -fno-stack-protector -Wall -nostdinc -fno-builtin
 
 PRJ_ROOT ?= ..
 KERNEL_IMG = kernel.img
@@ -52,7 +50,7 @@ KERNEL_OBJECTS = \
 USER_OBJECTS = crtso.o libc.o calls.o buddy.o
 
 
-COREUTILS = sh ls cat find pwd echo hello dsh kill
+COREUTILS = sh ls cat find pwd echo hello dsh kill halt
 COREUTILS_OBJECTS = $(addsuffix .o, $(COREUTILS))
 
 TESTS = mptest daemon
@@ -91,31 +89,30 @@ fs: default
 
 
 VPATH = ./include
-#vpath %.h ./include
 
 fstool: fstool.c filesystem.c filesystem.h
-	$(CC) -DUSE_UNIXPROC -DUSERLAND $(INCLUDE) $(HOST_CFLAGS) -o fstool fstool.c filesystem.c
+	$(HOST_CC) -DUSE_UNIXPROC -DUSERLAND $(INCLUDE) $(HOST_CFLAGS) -o fstool fstool.c filesystem.c
 
 testbuddy: testbuddy.c buddy.c buddy.h
-	$(CC) -DUSERLAND $(INCLUDE) $(HOST_CFLAGS) -o testbuddy testbuddy.c buddy.c
+	$(HOST_CC) -DUSERLAND $(INCLUDE) -m32 $(HOST_CFLAGS) -o testbuddy testbuddy.c buddy.c
 
 %.o: %.c
-	$(TARGET_CC) $(INCLUDE) $(CFLAGS) -c $<
+	$(TARGET_CC) $(INCLUDE) $(TARGET_CFLAGS) -c $<
 
 %.o: %.s
-	$(TARGET_CPP) $(INCLUDE) $< | $(TARGET_AS) -o $*.o
+	$(TARGET_CPP) $(INCLUDE) $< | $(TARGET_AS) $(TARGET_AS_FLAGS) -o $*.o
 
 
 # Link using `link.ld'
 $(KERNEL_IMG): $(KERNEL_OBJECTS)
-	$(TARGET_LD) -T link.ld -o $(KERNEL_IMG) $(KERNEL_OBJECTS)
+	$(TARGET_LD) $(TARGET_LD_FLAGS) -T link.ld -o $(KERNEL_IMG) $(KERNEL_OBJECTS)
 
 # Link using `link-user.ld'
 $(COREUTILS): %: %.o $(USER_OBJECTS)
-	$(TARGET_LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
+	$(TARGET_LD) $(TARGET_LD_FLAGS) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
 
 $(TESTS): %: %.o $(USER_OBJECTS)
-	$(TARGET_LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
+	$(TARGET_LD) $(TARGET_LD_FLAGS) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
 
 # Misc targets
 .PHONY : run run-qemu install clean
