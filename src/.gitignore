@@ -1,3 +1,5 @@
+Makefile
+Makefile.in
 filesystem.img
 kernel.img
 cat
@@ -14,4 +16,3 @@ pwd
 sh
 testbuddy
 halt
-Makefile
