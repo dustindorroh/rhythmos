@@ -276,3 +276,74 @@ void move_cursor(int x, int y)
 	outb(0x3D4, 15);
 	outb(0x3D5, val);
 }
+
+/*
+ * interrupt_enable
+ * 
+ * Sets the interrupt flag which enables hardware interupts. 
+ */
+void interrupt_enable(void)
+{
+	__asm__ __volatile__("sti"
+		:
+		:
+		);
+}
+
+/*
+ * interrupt_disable
+ * 
+ * Clears the interrupt flag which disables hardware interupts.
+ */
+unsigned interrupt_disable(void)
+{
+	unsigned ret_val;
+
+	__asm__ __volatile__("pushfl\n"
+		"popl %0\n"
+		"cli"
+		: "=a"(ret_val)
+		:);
+	return ret_val;
+}
+
+unsigned inportb(unsigned short port)
+{
+	unsigned char ret_val;
+
+	__asm__ __volatile__("inb %1,%0"
+		: "=a"(ret_val)
+		: "d"(port));
+	return ret_val;
+}
+
+void outportb(unsigned port, unsigned val)
+{
+	__asm__ __volatile__("outb %b0,%w1"
+		:
+		: "a"(val), "d"(port));
+}
+/*
+ * reboot
+ */
+static void reboot(void)
+{
+	unsigned temp;
+
+	interrupt_disable();
+	/* flush the keyboard controller */
+	do
+	{
+		temp = inportb(0x64);
+		if((temp & 0x01) != 0)
+		{
+			(void)inportb(0x60);
+			continue;
+		}
+	} while((temp & 0x02) != 0);
+/* pulse the CPU reset line */
+	outportb(0x64, 0xFE);
+/* ...and if that didn't work, just halt */
+	while(1)
+		/* nothing */;
+}
