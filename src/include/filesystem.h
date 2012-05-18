@@ -7,10 +7,15 @@
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 
-#define TYPE_DIR 1
-#define TYPE_FILE 2
+#define TYPE_DIR            0x01
+#define TYPE_FILE           0x02
+#define TYPE_CHARDEVICE     0x03
+#define TYPE_BLOCKDEVICE    0x04
+#define TYPE_PIPE           0x05
+#define TYPE_SYMLINK        0x06
+#define TYPE_MOUNTPOINT     0x08 /* Is the file an active mountpoint? */
 
-#define MAX_FILENAME_LEN     255
+#define MAX_FILENAME_LEN    255
 
 typedef struct directory_entry {
 	unsigned int size;	/* size of file/directory in bytes */

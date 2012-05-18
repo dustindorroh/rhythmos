@@ -9,8 +9,6 @@
 #include <keyboard.h>
 
 screenchar *screen = (screenchar *) VIDEO_MEMORY;
-extern char kbdmap[128];
-extern char kbdmap_shift[128];
 
 unsigned int xpos = 0;
 unsigned int ypos = 0;
@@ -21,13 +19,12 @@ unsigned int timer_ticks = 0;
 char *filesystem;
 pipe_buffer *input_pipe = NULL;
 extern process processes[MAX_PROCESSES];
-
 /*
  * scroll
  * 
  * Move lines 1-24 up by one line, and clear the last line.
  */
-static void scroll()
+static void scroll() // @TODO: Move to video.c
 {
 	unsigned int y;
 	unsigned int x;
@@ -56,7 +53,7 @@ static void scroll()
  * video memory. The position of the cursor is updated accordingly. The
  * screen is scrolled if the text goes beyond the end of the last line.
  */
-void write_to_screen(const char *data, unsigned int count)
+void write_to_screen(const char *data, unsigned int count) // @TODO: Move to video.c
 {
 	unsigned int i;
 	for (i = 0; i < count; i++) {
@@ -109,44 +106,6 @@ void timer_handler(regs * r)
 	context_switch(r);
 }
 
-/*
- * keyboard_handler
- * 
- * This function is called every time a key is pressed or released. The
- * lowest 7 bits of the scancode indicate which key it was, and the
- * highest bit indicates whether the event was a key press or key
- * release.
- * 
- * The key values correspond to the entries in the kbdmap and
- * kbdmap_shift arrays, or for special keys (e.g. arrow keys) the KEY_*
- * macros defined in constants.h
- */
-void keyboard_handler(regs * r, unsigned char scancode)
-{
-	unsigned char key = scancode & 0x7F;
-
-	if (scancode & 0x80) {
-		/*
-		 * key release 
-		 */
-		if (KEY_SHIFT == key)
-			shift_pressed = 0;
-	} else {
-		/*
-		 * key press 
-		 */
-		if (KEY_SHIFT == key) {
-			shift_pressed = 1;
-		} else {
-			char c =
-			    shift_pressed ? kbdmap_shift[key] : kbdmap[key];
-			if (input_pipe)
-				write_to_pipe(input_pipe, &c, 1);
-		}
-	}
-
-	context_switch(r);
-}
 
 /*
  * process_a

@@ -18,45 +18,11 @@
  * http://www.jamesmolloy.co.uk/tutorial_html/5.-IRQs%20and%20the%20PIT.html
  * These pages provide a more in-depth explanation of the setup code. 
  */
-#define DOWN 0x0600
-#define LEFT 0x0601 
-#define RIGHT 0x0602 
-#define UP 0x0603
-#define DELETE 0x7f
-#define BACKSPACE 0x08
+
 extern process *current_process;
 
 extern screenchar *screen;
 extern unsigned int fpustate[27];
-
-/*
- * US keyboard layout 
- */
-char kbdmap[128] = {
-	0, 27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', BACKSPACE,
-	'\t', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
-	0,
-	'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', 0, '\\',
-	'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, '*', 0, ' ',
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-};
-
-/*
- * US keyboard layout with SHIFT pressed 
- */
-char kbdmap_shift[128] = {
-	0, 27, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', BACKSPACE,
-	'\t', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n',
-	0,
-	'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', '~', 0, '|',
-	'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 0, '*', 0, ' ',
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-
-};
 
 
 typedef struct {
@@ -217,8 +183,7 @@ void interrupt_handler(regs * r)
 		break;
 	case INTERRUPT_KEYBOARD:
 		{
-			unsigned char scancode = inb(0x60);
-			keyboard_handler(r, scancode);
+			keyboard_handler(r);
 			break;
 		}
 	case INTERRUPT_SYSCALL:
@@ -275,4 +240,75 @@ void move_cursor(int x, int y)
 	outb(0x3D5, val >> 8);
 	outb(0x3D4, 15);
 	outb(0x3D5, val);
+}
+
+/*
+ * interrupt_enable
+ * 
+ * Sets the interrupt flag which enables hardware interupts. 
+ */
+void interrupt_enable(void)
+{
+	__asm__ __volatile__("sti"
+		:
+		:
+		);
+}
+
+/*
+ * interrupt_disable
+ * 
+ * Clears the interrupt flag which disables hardware interupts.
+ */
+unsigned interrupt_disable(void)
+{
+	unsigned ret_val;
+
+	__asm__ __volatile__("pushfl\n"
+		"popl %0\n"
+		"cli"
+		: "=a"(ret_val)
+		:);
+	return ret_val;
+}
+
+unsigned inportb(unsigned short port)
+{
+	unsigned char ret_val;
+
+	__asm__ __volatile__("inb %1,%0"
+		: "=a"(ret_val)
+		: "d"(port));
+	return ret_val;
+}
+
+void outportb(unsigned port, unsigned val)
+{
+	__asm__ __volatile__("outb %b0,%w1"
+		:
+		: "a"(val), "d"(port));
+}
+/*
+ * reboot
+ */
+void reboot(void)
+{
+	unsigned temp;
+
+	interrupt_disable();
+	/* flush the keyboard controller */
+	do
+	{
+		temp = inportb(0x64);
+		if((temp & 0x01) != 0)
+		{
+			(void)inportb(0x60);
+			continue;
+		}
+	} while((temp & 0x02) != 0);
+/* pulse the CPU reset line */
+	outportb(0x64, 0xFE);
+/* ...and if that didn't work, just halt */
+	while(1)
+		/* nothing */;
 }

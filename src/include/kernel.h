@@ -47,7 +47,7 @@ typedef struct {
  * main.c 
  */
 void timer_handler(regs * r);
-void keyboard_handler(regs * r, unsigned char scancode);
+void keyboard_handler(regs * r);
 void write_to_screen(const char *data, unsigned int count);
 
 /*
@@ -61,7 +61,7 @@ void setup_segmentation(void);
 void fatal(const char *str);
 void setup_interrupts(void);
 void move_cursor(int x, int y);
-
+void reboot(void);
 /*
  * page.c 
  */

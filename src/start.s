@@ -39,11 +39,11 @@ mboot:
   .int MULTIBOOT_HEADER_FLAGS
   .int MULTIBOOT_CHECKSUM
 
-  .int mboot
-  .int code
-  .int bss
-  .int end
-  .int start
+  .int mboot 	# Location of this descriptor
+  .int code 	# Start of kernel '.text' (code) section.
+  .int bss 	# End of kernel '.data' section.
+  .int end 	# End of kernel.
+  .int start 	# Kernel entry point (initial EIP).
 
 idle:
   jmp idle
