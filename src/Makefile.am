@@ -61,6 +61,7 @@ TEST_UTILS_OBJECTS = $(addsufix .o, $(TEST_UTILS))
 
 FILE_SYSTEM_BASE = $(PRJ_ROOT)/rootfs
 FILE_SYSTEM_BIN = $(FILE_SYSTEM_BASE)/bin
+FILE_SYSTEM_ETC = $(FILE_SYSTEM_BASE)/bin
 
 all: default fs boot
 
@@ -85,6 +86,7 @@ filesystem.img: |fs
 fs: default
 	./mkfstree.sh
 	cp $(COREUTILS) $(TESTS) $(FILE_SYSTEM_BIN)
+	cp $(INIT) $(CONFIGS) $(FILE_SYSTEM_ETC)
 	./mk_filesystem_image.sh
 
 
