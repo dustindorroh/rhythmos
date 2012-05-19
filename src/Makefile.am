@@ -50,6 +50,7 @@ KERNEL_OBJECTS = \
 	keyboard.o
 USER_OBJECTS = crtso.o libc.o calls.o buddy.o
 
+INIT = init
 COREUTILS = sh ls cat find pwd echo hello dsh kill halt hlt vforkt
 COREUTILS_OBJECTS = $(addsuffix .o, $(COREUTILS))
 
@@ -121,7 +122,7 @@ $(TESTS): %: %.o $(USER_OBJECTS)
 run: |run-qemu
 
 run-qemu: boot
-	qemu -daemonize -fda $(GRUB_IMG)
+	qemu-system-i386 -daemonize -fda $(GRUB_IMG)
 
 
 clean-local:
