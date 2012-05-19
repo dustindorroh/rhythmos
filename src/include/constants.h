@@ -104,6 +104,8 @@
 #define ERRNO_MAX            14
 #define ESUSPEND             1000
 
+#define EXIT_SUCCESS		 0
+#define EXIT_FAILURE		 1
 
 /* 
  * Macros 
