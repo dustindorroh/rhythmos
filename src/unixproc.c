@@ -159,6 +159,142 @@ pid_t syscall_fork(regs * r)
 	return child_pid;
 }
 
+
+
+/* 
+ * syscall_vfork
+ * 
+ * The vfork() function differs from fork() only in that the child process can 
+ * share code and data with the calling process (parent process). This speeds 
+ * cloning activity significantly at a risk to the integrity of the parent 
+ * process if vfork() is misused.
+ * 
+ * 
+ * The use of vfork() for any purpose except as a prelude to an immediate call 
+ * to a function from the exec family, or to _exit(), is not advised.
+ * 
+ * The vfork() function can be used to create new processes without fully 
+ * copying the address space of the old process. If a forked process is simply 
+ * going to call exec, the data space copied from the parent to the child by 
+ * fork() is not used. This is particularly inefficient in a paged environment, 
+ * making vfork() particularly useful. Depending upon the size of the parent's 
+ * data space, vfork() can give a significant performance improvement over 
+ * fork().
+ * 
+ * The vfork() function can normally be used just like fork(). It does not work,
+ * however, to return while running in the child's context from the caller of 
+ * vfork() since the eventual return from vfork() would then return to a no 
+ * longer existent stack frame. Be careful, also, to call _exit() rather than 
+ * exit() if you cannot exec, since exit() flushes and closes standard I/O 
+ * channels, thereby damaging the parent process' standard I/O data structures. 
+ * (Even with fork(), it is wrong to call exit(), since buffered data would then
+ * be flushed twice.)
+ * 
+ */
+ 
+pid_t syscall_vfork(regs * r)
+{
+	/*
+	 * Find a free process identifier 
+	 */
+	pid_t child_pid = get_free_pid();
+	if (0 > child_pid)
+		return -EAGAIN;
+	
+	process *parent = current_process;
+	process *child = &processes[child_pid];
+	memset(child, 0, sizeof(process));
+	child->pid = child_pid;
+	child->parent_pid = parent->pid;
+	child->exists = 1;
+	
+	parent->waiting_on = -1;
+
+	/*
+	 * Create a page directory for the new process, and set the segment ranges.
+	 * Note that we have to temporarily disable paging here, because we need to
+	 * deal with physical memory when allocating a page directory and setting up
+	 * the mappings. 
+	 */
+	disable_paging();
+	child->pdir = (page_dir) alloc_page();
+
+	child->text_start = parent->text_start;
+	child->text_end = parent->text_end;
+	child->data_start = parent->data_start;
+	child->data_end = parent->data_end;
+	child->stack_start = parent->stack_start;
+	child->stack_end = parent->stack_end;
+
+	/*
+	 * Identity map memory 0-6Mb 
+	 */
+	unsigned int addr;
+	for (addr = 0 * MB; addr < 6 * MB; addr += PAGE_SIZE)
+		map_page(child->pdir, addr, addr, PAGE_USER, PAGE_READ_ONLY);
+
+	/*
+	 * Copy parent's text, data, and stack segments to child 
+	 */
+	map_and_copy(parent->pdir, child->pdir, child->text_start,
+		     child->text_end);
+	map_and_copy(parent->pdir, child->pdir, child->data_start,
+		     child->data_end);
+	map_and_copy(parent->pdir, child->pdir, child->stack_start,
+		     child->stack_end);
+
+	enable_paging(current_process->pdir);
+
+	/*
+	 * Copy file handles. The reference count is increased on each of them, so
+	 * that we can keep track of how many file descriptors refere to each file
+	 * handle. This information is needed so we know when to destroy a file handle
+	 * (i.e. when its reference count reaches 0). 
+	 */
+	int i;
+	for (i = 0; i < MAX_FDS; i++) {
+		if (NULL != parent->filedesc[i]) {
+			child->filedesc[i] = parent->filedesc[i];
+			child->filedesc[i]->refcount++;
+		}
+	}
+	/*
+	 * Copy the saved CPU registers of the current process, which determines its
+	 * execution state (instruction pointer, stack pointer etc.) 
+	 */
+	child->saved_regs = *r;
+	child->saved_regs.eax = 0;	/* child's return value from vfork */
+
+	//memmove(child->cwd, parent->cwd, PATH_MAX);
+
+	/*
+	 * Place the process on the ready list, so that it can begin execution on a
+	 * subsequent context switch 
+	 */
+	child->ready = 1;
+	list_add(&ready, child);
+
+	/*
+	 * Return the child's process id... note that this value will only go to the
+	 * parent, since we set the child's return value from fork above 
+	 */
+	 
+ 	kprintf("vfork debug output\n");
+	kprintf("child->pid: %i,%i\n",child->pid,parent->pid);
+	kprintf("exists: %i,%i\n",child->exists,parent->exists);
+	kprintf("ready: %i,%i\n",child->ready,parent->ready);
+	kprintf("pdir: %i,%i\n",child->pdir,parent->pdir);
+	kprintf("last_errno:%i,%i\n",child->last_errno,parent->last_errno);
+	kprintf("stack_start: %u,%u\n",child->stack_start,parent->stack_start);
+	kprintf("stack_end: %u,%u\n",child->stack_end,parent->stack_end);
+	kprintf("data_start: %u,%u\n",child->data_start,parent->data_start);
+	kprintf("data_end: %u,%u\n",child->data_end,parent->data_end);
+	kprintf("text_start: %u,%u\n",child->text_start,parent->text_start);
+	kprintf("text_end: %u,%u\n",child->text_end,parent->text_end);
+
+	return child_pid;
+}
+
 /*
  * syscall_execve
  * 

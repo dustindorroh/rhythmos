@@ -21,6 +21,7 @@ int syscall_dup2(int oldfd, int newfd);
  * unixproc.c 
  */
 pid_t syscall_fork(regs * r);
+pid_t syscall_vfork(regs * r);
 int syscall_execve(const char *filename, char *const argv[],
 		   char *const envp[], regs * r);
 pid_t syscall_waitpid(pid_t pid, int *status, int options);
@@ -395,6 +396,9 @@ void syscall(regs * r)
 		break;
 	case SYSCALL_FORK:
 		res = syscall_fork(r);
+		break;
+	case SYSCALL_VFORK:
+		res = syscall_vfork(r);
 		break;
 	case SYSCALL_EXECVE:
 		res = syscall_execve((char *)args[0], (char *const *)args[1],

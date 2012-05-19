@@ -226,6 +226,45 @@ void resume_process(process * proc);
 void context_switch(regs * r);
 
 /*
+ * thread.c 
+ */
+
+typedef struct thread {
+	thread_t pid;			/* thread identifier/index into thread array */
+	int exists;				/* whether or not this process slot is used */
+	regs saved_regs;		/* saved state for a non-active process */
+	int ready;				/* is this thread read to execute? */
+	struct thread *prev;	/* Threads for ready/suspended lists */
+	struct thread *next;	/* Threads for ready/suspended lists */
+	page_dir pdir;			/* page directory */
+	int in_syscall;			/* is this process currently executing a system call? */
+	int last_errno;			/* last_errno */
+	filehandle *filedesc[MAX_FDS];
+	char cwd[PATH_MAX];
+	unsigned int stack_start;
+	unsigned int stack_end;
+	unsigned int data_start;
+	unsigned int data_end;
+	unsigned int text_start;
+	unsigned int text_end;
+	pid_t parent_pid;
+	int exit_status;
+	int exited;
+	pid_t waiting_on;
+	message *mailbox;
+	int mailbox_size;
+	int mailbox_alloc;
+	int receive_blocked;
+} thread;
+
+typedef struct {
+	thread *first;
+	thread *last;
+} threadlist;
+
+
+
+/*
  * syscall.c 
  */
 

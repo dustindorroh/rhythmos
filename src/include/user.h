@@ -18,6 +18,7 @@ void __assert(const char *str, const char *function);
 typedef int ssize_t;
 typedef unsigned int size_t;
 typedef int pid_t;
+typedef int thread_t;
 
 /*
  * Filesystem data structures 
@@ -131,6 +132,7 @@ int close(int fd);
 int pipe(int filedes[2]);
 int dup2(int oldfd, int newfd);
 pid_t fork(void);
+pid_t vfork(void);
 int execve(const char *filename, char *const argv[], char *const envp[]);
 pid_t waitpid(pid_t pid, int *status, int options);
 int stat(const char *path, struct stat *buf);

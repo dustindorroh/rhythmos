@@ -31,6 +31,7 @@ syscall getdent     SYSCALL_GETDENT
 syscall chdir       SYSCALL_CHDIR
 syscall getcwd      SYSCALL_GETCWD
 syscall fork        SYSCALL_FORK
+syscall vfork       SYSCALL_VFORK
 syscall execve      SYSCALL_EXECVE
 syscall waitpid     SYSCALL_WAITPID
 syscall kill        SYSCALL_KILL

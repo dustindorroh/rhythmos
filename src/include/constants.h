@@ -83,7 +83,7 @@
 #define SYSCALL_GETCWD       19
 #define SYSCALL_KILL         20
 #define SYSCALL_HALT         21
-
+#define SYSCALL_VFORK		 22
 
 /*
  * errno values 
