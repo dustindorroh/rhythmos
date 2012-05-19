@@ -44,7 +44,7 @@
 #define SCREEN_WIDTH         80
 #define SCREEN_HEIGHT        25
 #define VIDEO_MEMORY         0xB8000
-#define ISR_FREQ	     0x1234DC /* 1.19318 MHz */
+#define ISR_FREQ	     	 0x1234DC	/* 1.19318 MHz */
 #define TICKS_PER_SECOND     50
 #define RING_0               0
 #define RING_1               1
@@ -104,6 +104,8 @@
 #define ERRNO_MAX            14
 #define ESUSPEND             1000
 
+#define EXIT_SUCCESS		 0
+#define EXIT_FAILURE		 1
 
 /* 
  * Macros 

@@ -153,6 +153,7 @@ size_t strlen(const char *s)
 		len++;
 	return len;
 }
+
 /* 
  * The strchr() function returns a pointer to the first occurrence of the 
  * character c in the string s.

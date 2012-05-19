@@ -141,7 +141,7 @@ int getdent(int fd, struct dirent *entry);
 int chdir(const char *path);
 char *getcwd(char *buf, size_t size);
 int kill(pid_t pid);
-void halt (void);
+void halt(void);
 
 /*
  * Memory allocation 

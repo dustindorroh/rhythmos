@@ -17,7 +17,6 @@
  *      along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include <user.h>
 #include <keyboard.h>
 
@@ -70,13 +69,14 @@ void process_line(char *line, int *done)
 	int pos;
 	int tpos = 0;
 	int len = strlen(line);
-	char * tline = (char *)malloc(BUFSIZE);
+	char *tline = (char *)malloc(BUFSIZE);
 	char *argv[MAX_ARGS + 1];
-	
+
 	// = malloc(rlen * sizeof(char));
 
 	for (pos = 0; pos <= len; pos++) {
-		if((BACKSPACE == line[pos+1]) && (BACKSPACE == line[pos+2])) {
+		if ((BACKSPACE == line[pos + 1])
+		    && (BACKSPACE == line[pos + 2])) {
 			pos--;
 			pos--;
 			pos--;
@@ -88,14 +88,14 @@ void process_line(char *line, int *done)
 	}
 
 	memset(line, 0, len * sizeof(char));
-	memmove(line,tline,tpos);
-	
+	memmove(line, tline, tpos);
+
 	tline = (char *)malloc(BUFSIZE);
 	len = strlen(line);
-	tpos=0;
-	
+	tpos = 0;
+
 	for (pos = 0; pos <= len; pos++) {
-		if(BACKSPACE == line[pos+1]) {
+		if (BACKSPACE == line[pos + 1]) {
 			pos++;
 			pos++;
 			tline[tpos] = line[pos];
@@ -106,9 +106,8 @@ void process_line(char *line, int *done)
 	}
 
 	memset(line, 0, len * sizeof(char));
-	memmove(line,tline,tpos);
+	memmove(line, tline, tpos);
 
-	
 	/* Extract the space-separated tokens from the command line  */
 	int argc = parse_command(line, argv, MAX_ARGS);
 	argv[argc] = NULL;	/* so we can pass it to execve() */

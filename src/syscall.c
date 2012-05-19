@@ -237,12 +237,11 @@ int syscall_kill(pid_t pid)
 }
 
 static inline void __attribute__ ((noreturn))
-syscall_halt (void)
+    syscall_halt(void)
 {
-  while (1)
-    {
-      asm volatile ("hlt");
-    }
+	while (1) {
+		asm volatile ("hlt");
+	}
 }
 
 /**

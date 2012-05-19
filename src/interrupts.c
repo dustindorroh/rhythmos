@@ -24,7 +24,6 @@ extern process *current_process;
 extern screenchar *screen;
 extern unsigned int fpustate[27];
 
-
 typedef struct {
 	unsigned short base_lo;
 	unsigned short sel;
@@ -84,8 +83,8 @@ void setup_interrupts(void)
 	/* Setup IRQ and interrupt handlers */
 	for (i = 0; i < 48; i++)
 		idt_set_gate(i, interrupt_handlers[i], 0x08, 0x8E);
-	
-	/* Interrupt 48 is system call - allow it to be called from ring 3 */ 
+
+	/* Interrupt 48 is system call - allow it to be called from ring 3 */
 	idt_set_gate(i, interrupt_handlers[i], 0x08, 0xEE);
 
 	/* Configure the system clock to send timer interrupts at 50Hz */
@@ -93,7 +92,7 @@ void setup_interrupts(void)
 
 	/* Send the command byte. */
 	outb(0x43, 0x36);
-	
+
 	outb(0x40, LOWER_BYTE(div));
 	outb(0x40, UPPER_BYTE(div));
 
@@ -249,10 +248,7 @@ void move_cursor(int x, int y)
  */
 void interrupt_enable(void)
 {
-	__asm__ __volatile__("sti"
-		:
-		:
-		);
+	__asm__ __volatile__("sti"::);
 }
 
 /*
@@ -264,11 +260,8 @@ unsigned interrupt_disable(void)
 {
 	unsigned ret_val;
 
-	__asm__ __volatile__("pushfl\n"
-		"popl %0\n"
-		"cli"
-		: "=a"(ret_val)
-		:);
+	__asm__ __volatile__("pushfl\n" "popl %0\n" "cli":"=a"(ret_val)
+			     :);
 	return ret_val;
 }
 
@@ -276,18 +269,16 @@ unsigned inportb(unsigned short port)
 {
 	unsigned char ret_val;
 
-	__asm__ __volatile__("inb %1,%0"
-		: "=a"(ret_val)
-		: "d"(port));
+	__asm__ __volatile__("inb %1,%0":"=a"(ret_val)
+			     :"d"(port));
 	return ret_val;
 }
 
 void outportb(unsigned port, unsigned val)
 {
-	__asm__ __volatile__("outb %b0,%w1"
-		:
-		: "a"(val), "d"(port));
+	__asm__ __volatile__("outb %b0,%w1"::"a"(val), "d"(port));
 }
+
 /*
  * reboot
  */
@@ -297,18 +288,16 @@ void reboot(void)
 
 	interrupt_disable();
 	/* flush the keyboard controller */
-	do
-	{
+	do {
 		temp = inportb(0x64);
-		if((temp & 0x01) != 0)
-		{
+		if ((temp & 0x01) != 0) {
 			(void)inportb(0x60);
 			continue;
 		}
-	} while((temp & 0x02) != 0);
+	} while ((temp & 0x02) != 0);
 /* pulse the CPU reset line */
 	outportb(0x64, 0xFE);
 /* ...and if that didn't work, just halt */
-	while(1)
-		/* nothing */;
+	while (1)
+		/* nothing */ ;
 }

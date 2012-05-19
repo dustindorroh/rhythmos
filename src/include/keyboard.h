@@ -8,13 +8,11 @@
 #define KEYBOARD_H
 #include <kernel.h>
 
-
 #define KEYBOARD_INPUT_PORT  0x60
 #define KEYBOARD_OUTPUT_PORT 0x60
 #define KEYBOARD_STATUS_PORT 0x64
 
-
-#define KEYBOARD_INPUT_BUF_STATUS 0x02 /* If bit is 0 buffer is empty */
+#define KEYBOARD_INPUT_BUF_STATUS 0x02	/* If bit is 0 buffer is empty */
 
 /* KEYBOARD KEYS MAP */
 
@@ -100,7 +98,6 @@ http://www.execpc.com/~geezer/osd/kbd */
 #define	RAW1_F12			0x58
 
 #define	KBD_BUF_SIZE		64
-
 
 void keyboard_handler(regs * r);
 

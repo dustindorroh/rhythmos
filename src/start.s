@@ -24,7 +24,7 @@
 start:
   mov $sys_stack,%esp
   push %ebx # multiboot header
-  call kernel_main
+  call kmain
 
 .align 4
 mboot:
