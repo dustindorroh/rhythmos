@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include <kernel.h>
 #include <keyboard.h>
 extern pipe_buffer *input_pipe;
@@ -198,20 +197,19 @@ static unsigned convert(unsigned key)
 	/* Ignore invalid scan codes */
 	if (key >= sizeof(key_map) / sizeof(key_map[0]))
 		return 0;
-	
+
 	/* 
 	 * Convert raw scancode to ASCII 
-	 */ 
+	 */
 	if (kbd_status & KBD_META_CAPS) {
 		/* Handle Caps Lock and Shift key conversion */
-		temp = (kbd_status & KBD_META_SHIFT) ? 
-			key_map_caps_shift[key] : key_map_caps[key];
+		temp = (kbd_status & KBD_META_SHIFT) ?
+		    key_map_caps_shift[key] : key_map_caps[key];
 	} else {
 		/* Handle regular and Shift conversions */
-		temp = (kbd_status & KBD_META_SHIFT) ? 
-			key_map_shift[key] : key_map[key];
+		temp = (kbd_status & KBD_META_SHIFT) ?
+		    key_map_shift[key] : key_map[key];
 	}
-	
 
 	/* Defective keyboard? non-US keyboard? more than 104 keys? */
 	if (temp == 0)

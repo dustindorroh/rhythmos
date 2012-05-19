@@ -259,33 +259,24 @@ void shell(const char *data, unsigned int size)
 					printf("%c%c%c%c%c%c%c%c%c%c ",
 					       TYPE_DIR ==
 					       dir->entries[i].type ? 'd' : '-',
-					       (dir->
-						entries[i].mode & 0400) ? 'r' :
-					       '-',
-					       (dir->
-						entries[i].mode & 0200) ? 'w' :
-					       '-',
-					       (dir->
-						entries[i].mode & 0100) ? 'x' :
-					       '-',
-					       (dir->
-						entries[i].mode & 040) ? 'r' :
-					       '-',
-					       (dir->
-						entries[i].mode & 020) ? 'w' :
-					       '-',
-					       (dir->
-						entries[i].mode & 010) ? 'x' :
-					       '-',
-					       (dir->
-						entries[i].mode & 04) ? 'r' :
-					       '-',
-					       (dir->
-						entries[i].mode & 02) ? 'w' :
-					       '-',
-					       (dir->
-						entries[i].mode & 01) ? 'x' :
-					       '-');
+					       (dir->entries[i].
+						mode & 0400) ? 'r' : '-',
+					       (dir->entries[i].
+						mode & 0200) ? 'w' : '-',
+					       (dir->entries[i].
+						mode & 0100) ? 'x' : '-',
+					       (dir->entries[i].
+						mode & 040) ? 'r' : '-',
+					       (dir->entries[i].
+						mode & 020) ? 'w' : '-',
+					       (dir->entries[i].
+						mode & 010) ? 'x' : '-',
+					       (dir->entries[i].
+						mode & 04) ? 'r' : '-',
+					       (dir->entries[i].
+						mode & 02) ? 'w' : '-',
+					       (dir->entries[i].
+						mode & 01) ? 'x' : '-');
 
 					/*
 					 * printf("%8d ",dir->entries[i].mtime); 

@@ -40,7 +40,7 @@ char *rm_chars(char *src, char *key)
 
 	/* Allocate memory for the destination and initialise it */
 	dest = (char *)malloc(sizeof(char) * len_src + 1);
-	
+
 	if (NULL == dest) {
 		printf("Unable to allocate memory\n");
 		return dest;
@@ -48,38 +48,39 @@ char *rm_chars(char *src, char *key)
 
 	memset(dest, 0, sizeof(char) * len_src + 1);
 
-		for (i = 0; i < len_src; i++) {
-			found = FALSE;
-			for (j = 0; j < len_key; j++) {
-				if (((src[i] == key[j]) && (src[i+1] != key[j])) || ((src[i] != key[j]) && (src[i+1] == key[j])))
-					found = TRUE;
-			}
-
-			/* Copy the character if it was NOT found in the key */
-			if (FALSE == found) {
-				dest[k] = src[i];
-				k++;
-			}
+	for (i = 0; i < len_src; i++) {
+		found = FALSE;
+		for (j = 0; j < len_key; j++) {
+			if (((src[i] == key[j]) && (src[i + 1] != key[j]))
+			    || ((src[i] != key[j]) && (src[i + 1] == key[j])))
+				found = TRUE;
 		}
+
+		/* Copy the character if it was NOT found in the key */
+		if (FALSE == found) {
+			dest[k] = src[i];
+			k++;
+		}
+	}
 	return (dest);
 }
 
-char *rm_consecutive_chars( char *src, char *key )
+char *rm_consecutive_chars(char *src, char *key)
 {
 	int found;
 	int i;
 	char *dest = (char *)malloc(sizeof(char) * strlen(src) + 1);
-	strcpy(dest,src);
+	strcpy(dest, src);
 	do {
 		found = FALSE;
 		for (i = 0; i < strlen(dest); i++) {
 			if (dest[i] == key) {
 				found = TRUE;
-				dest = rm_chars( dest, key );
+				dest = rm_chars(dest, key);
 			}
 		}
 	} while (found == TRUE);
-	
+
 	return (dest);
 }
 
@@ -132,9 +133,9 @@ void process_line(char *line, int *done)
 	int len = strlen(line);
 	char *tline = (char *)malloc(BUFSIZE);
 	char *argv[MAX_ARGS + 1];
-	
+
 	// = malloc(rlen * sizeof(char));
-	
+
 /*
 	for (pos = 0; pos <= len; pos++) {
 		if((BACKSPACE == line[pos+1]) && (BACKSPACE == line[pos+2])) {
@@ -199,16 +200,16 @@ void process_line(char *line, int *done)
 		/* Parse for shell variables 
 		 * (ie tokens that start with `$') */
 		int i;
-		for(i = 0; i < argc; i++) {
+		for (i = 0; i < argc; i++) {
 			if (argv[i][0] == '$') {
-				printf("SHELL VARIABLE DETECTED: %s",argv[i]);
+				printf("SHELL VARIABLE DETECTED: %s", argv[i]);
 				if (argv[i][1] == '$') {
 					printf("%d", getpid());
-				} else if (strcmp(argv[i],"$line")==0){
-					printf("buf:%s\n",line);
-				} else if (strcmp(argv[i],"$PATH")==0){
-					printf("%s\n",DEFAULT_PATH);
-				}			
+				} else if (strcmp(argv[i], "$line") == 0) {
+					printf("buf:%s\n", line);
+				} else if (strcmp(argv[i], "$PATH") == 0) {
+					printf("%s\n", DEFAULT_PATH);
+				}
 			}
 		}
 		/* Run a program */
@@ -224,7 +225,7 @@ void process_line(char *line, int *done)
 	free(tline);
 }
 
-void prompt(char * username, char * hostname)
+void prompt(char *username, char *hostname)
 {
 	/* Print current working directory */
 	char path[PATH_MAX];
@@ -232,7 +233,7 @@ void prompt(char * username, char * hostname)
 		perror("getcwd");
 		puts("$ ");
 	} else if (username != NULL && hostname != NULL) {
-		printf("%s@%s:%s $ ",username,hostname, path);
+		printf("%s@%s:%s $ ", username, hostname, path);
 	} else {
 		printf("rmos:%s$ ", path);
 	}
@@ -244,7 +245,7 @@ int main(int argc, char **argv)
 	int pos = 0;
 	int linestart = 0;
 	printf("Dubug Shell started, pid = %d\n", getpid());
-	prompt(NULL,NULL);
+	prompt(NULL, NULL);
 	int r;
 	int done = 0;
 
@@ -265,8 +266,8 @@ int main(int argc, char **argv)
 			if ('\n' == input[pos]) {
 				input[pos] = '\0';
 				process_line(&input[linestart], &done);
-				
-				prompt(NULL,NULL);
+
+				prompt(NULL, NULL);
 				linestart = pos + 1;
 			}
 			pos++;

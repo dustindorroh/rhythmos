@@ -13,7 +13,7 @@
 #define TYPE_BLOCKDEVICE    0x04
 #define TYPE_PIPE           0x05
 #define TYPE_SYMLINK        0x06
-#define TYPE_MOUNTPOINT     0x08 /* Is the file an active mountpoint? */
+#define TYPE_MOUNTPOINT     0x08	/* Is the file an active mountpoint? */
 
 #define MAX_FILENAME_LEN    255
 
