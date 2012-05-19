@@ -221,13 +221,13 @@ void launch_shell()
 }
 
 /*
- * kernel_main
+ * kmain
  * 
  * This is the first thing that executes when the kernel starts. Any
  * initialisation e.g. interrupt handlers must be done at the start of
  * the function. This function should never return.
  */
-void kernel_main(multiboot * mb)
+void kmain(multiboot * mb)
 {
 	setup_segmentation();
 	setup_interrupts();
