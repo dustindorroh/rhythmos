@@ -11,7 +11,7 @@
 void kprintf(const char *format, ...);
 #else
 #include <kernel.h>
-#endif	/* USERLAND */
+#endif				/* USERLAND */
 #include <buddy.h>
 
 /* Helper macros for accessing the blocks array */
@@ -140,7 +140,7 @@ void *buddy_alloc(memarea * ma, unsigned int nbytes)
 			kprintf("Memory exhausted\n");
 #ifndef USERLAND
 			assert(0);
-#endif /* USERLAND */
+#endif				/* USERLAND */
 			return NULL;
 		}
 
@@ -284,7 +284,7 @@ unsigned int buddy_nblocks(unsigned int sizepow2)
  * by the DEFAULT_LOWER macro near the top of this file.
  */
 void buddy_init(memarea * ma, unsigned int sizepow2, char *membase,
-	   blockinfo * blocks)
+		blockinfo * blocks)
 {
 	memset(ma, 0, sizeof(memarea));
 	ma->lower = DEFAULT_LOWER;
@@ -398,19 +398,18 @@ void *realloc(void *ptr, size_t size)
 		assert(!"realloc should not be called from kernel mode");
 
 	/* If ptr is NULL, then the call is equivalent to malloc(size) */
-	if (ptr == NULL){
+	if (ptr == NULL) {
 		printf("Warning ptr is NULL: calling malloc(%d)\n", size);
 		return malloc(size);
 	} else if (size == 0) {
 		printf("Warning size = 0: calling free(ptr)\n");
 		free(ptr);
 		return NULL;
-	} 
-	
-	///* If size is 0, then the call is equivalent to malloc(size) */	
+	}
+	///* If size is 0, then the call is equivalent to malloc(size) */       
 	//if (size == 0 && (ptr != NULL)) {
-		//free(ptr);
-		//return NULL;
+	//free(ptr);
+	//return NULL;
 	//}
 }
 
@@ -442,7 +441,6 @@ void *realloc(void *ptr, size_t size)
     //return newblock+HEADER;
   //}
 //}
-
 
 /* free
  * 
@@ -492,4 +490,4 @@ void kfree(void *ptr)
 	buddy_free(&kernel_memarea, ptr);
 }
 
-#endif /* USERLAND */
+#endif				/* USERLAND */

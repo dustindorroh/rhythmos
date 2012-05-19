@@ -226,11 +226,10 @@ void kill_process(process * proc)
 	if (current_process == proc)
 		current_process = NULL;
 
-	if (proc->ready) 
+	if (proc->ready)
 		list_remove(&ready, proc)
-	else
+		    else
 		list_remove(&suspended, proc);
-
 
 	int i;
 	for (i = 0; i < MAX_FDS; i++) {
@@ -244,17 +243,19 @@ void kill_process(process * proc)
 	unsigned int addr;
 
 	/* Free stack  */
-	for (addr = proc->stack_start; addr < proc->stack_end; addr += PAGE_SIZE)
+	for (addr = proc->stack_start; addr < proc->stack_end;
+	     addr += PAGE_SIZE)
 		unmap_and_free_page(proc->pdir, addr);
-	
-	for ((addr = proc->data_start); (addr < proc->data_end); (addr += PAGE_SIZE)) {
+
+	for ((addr = proc->data_start); (addr < proc->data_end);
+	     (addr += PAGE_SIZE)) {
 		unmap_and_free_page(proc->pdir, addr);
 	}
 
 	for (addr = proc->text_start; addr < proc->text_end; addr += PAGE_SIZE)
 		unmap_and_free_page(proc->pdir, addr);
-		
-		free_page_dir(proc->pdir);
+
+	free_page_dir(proc->pdir);
 
 	if (NULL != proc->mailbox)
 		kfree(proc->mailbox);

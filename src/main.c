@@ -24,7 +24,7 @@ extern process processes[MAX_PROCESSES];
  * 
  * Move lines 1-24 up by one line, and clear the last line.
  */
-static void scroll() // @TODO: Move to video.c
+static void scroll()		// @TODO: Move to video.c
 {
 	unsigned int y;
 	unsigned int x;
@@ -53,7 +53,7 @@ static void scroll() // @TODO: Move to video.c
  * video memory. The position of the cursor is updated accordingly. The
  * screen is scrolled if the text goes beyond the end of the last line.
  */
-void write_to_screen(const char *data, unsigned int count) // @TODO: Move to video.c
+void write_to_screen(const char *data, unsigned int count)	// @TODO: Move to video.c
 {
 	unsigned int i;
 	for (i = 0; i < count; i++) {
@@ -68,12 +68,12 @@ void write_to_screen(const char *data, unsigned int count) // @TODO: Move to vid
 			int add = 8 - (xpos % 8);
 			xpos += add;
 		} else if (c == BACKSPACE && xpos) {
-		/* Handle a backspace, by moving the cursor back one space
-		 * untill the cursor is against the edge */
-			
-			xpos--;  /* Back the cursor up then display if */			
-			screen[ypos * SCREEN_WIDTH + xpos].c = (int) NULL;
-			
+			/* Handle a backspace, by moving the cursor back one space
+			 * untill the cursor is against the edge */
+
+			xpos--;	/* Back the cursor up then display if */
+			screen[ypos * SCREEN_WIDTH + xpos].c = (int)NULL;
+
 		} else {
 			/* normal character */
 			screen[ypos * SCREEN_WIDTH + xpos].c = c;
@@ -87,7 +87,7 @@ void write_to_screen(const char *data, unsigned int count) // @TODO: Move to vid
 			scroll();
 		}
 	}
-		
+
 	move_cursor(xpos, ypos);
 }
 
@@ -105,7 +105,6 @@ void timer_handler(regs * r)
 
 	context_switch(r);
 }
-
 
 /*
  * process_a
@@ -247,7 +246,7 @@ void kmain(multiboot * mb)
 	 */
 	move_cursor(xpos, ypos);
 
-	kprintf("%s\n%s\n%s\n\n\n\n",VERSION,COPYRIGHT,DISCLAIMER);
+	kprintf("%s\n%s\n%s\n\n\n\n", VERSION, COPYRIGHT, DISCLAIMER);
 
 	assert(1 == mb->mods_count);
 	assert(mb->mods_addr[0].mod_end < 2 * MB);

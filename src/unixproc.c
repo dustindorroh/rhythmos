@@ -159,8 +159,6 @@ pid_t syscall_fork(regs * r)
 	return child_pid;
 }
 
-
-
 /* 
  * syscall_vfork
  * 
@@ -191,7 +189,7 @@ pid_t syscall_fork(regs * r)
  * be flushed twice.)
  * 
  */
- 
+
 pid_t syscall_vfork(regs * r)
 {
 	/*
@@ -200,14 +198,14 @@ pid_t syscall_vfork(regs * r)
 	pid_t child_pid = get_free_pid();
 	if (0 > child_pid)
 		return -EAGAIN;
-	
+
 	process *parent = current_process;
 	process *child = &processes[child_pid];
 	memset(child, 0, sizeof(process));
 	child->pid = child_pid;
 	child->parent_pid = parent->pid;
 	child->exists = 1;
-	
+
 	parent->waiting_on = -1;
 
 	/*
@@ -278,19 +276,20 @@ pid_t syscall_vfork(regs * r)
 	 * Return the child's process id... note that this value will only go to the
 	 * parent, since we set the child's return value from fork above 
 	 */
-	 
- 	kprintf("vfork debug output\n");
-	kprintf("child->pid: %i,%i\n",child->pid,parent->pid);
-	kprintf("exists: %i,%i\n",child->exists,parent->exists);
-	kprintf("ready: %i,%i\n",child->ready,parent->ready);
-	kprintf("pdir: %i,%i\n",child->pdir,parent->pdir);
-	kprintf("last_errno:%i,%i\n",child->last_errno,parent->last_errno);
-	kprintf("stack_start: %u,%u\n",child->stack_start,parent->stack_start);
-	kprintf("stack_end: %u,%u\n",child->stack_end,parent->stack_end);
-	kprintf("data_start: %u,%u\n",child->data_start,parent->data_start);
-	kprintf("data_end: %u,%u\n",child->data_end,parent->data_end);
-	kprintf("text_start: %u,%u\n",child->text_start,parent->text_start);
-	kprintf("text_end: %u,%u\n",child->text_end,parent->text_end);
+
+	kprintf("vfork debug output\n");
+	kprintf("child->pid: %i,%i\n", child->pid, parent->pid);
+	kprintf("exists: %i,%i\n", child->exists, parent->exists);
+	kprintf("ready: %i,%i\n", child->ready, parent->ready);
+	kprintf("pdir: %i,%i\n", child->pdir, parent->pdir);
+	kprintf("last_errno:%i,%i\n", child->last_errno, parent->last_errno);
+	kprintf("stack_start: %u,%u\n", child->stack_start,
+		parent->stack_start);
+	kprintf("stack_end: %u,%u\n", child->stack_end, parent->stack_end);
+	kprintf("data_start: %u,%u\n", child->data_start, parent->data_start);
+	kprintf("data_end: %u,%u\n", child->data_end, parent->data_end);
+	kprintf("text_start: %u,%u\n", child->text_start, parent->text_start);
+	kprintf("text_end: %u,%u\n", child->text_end, parent->text_end);
 
 	return child_pid;
 }

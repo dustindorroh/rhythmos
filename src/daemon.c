@@ -16,52 +16,48 @@
  *      You should have received a copy of the GNU General Public License
  *      along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #include <user.h>
 
-int main(int argc, char** argv)
-{
-
-	/* Our process ID */
+typedef struct init {
 	pid_t pid;
+	char **programs;
+} init_t;
 
+int daemon_init(void)
+{
 	/* Fork off the parent process */
-	pid = fork();
+	pid_t pid = fork();
 	if (pid < 0) {
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
-	/* If we got a good PID, then
-	   we can exit the parent process. */
 	if (pid == 0) {
-		printf("child pid: %d\n",getpid());
+		printf("child pid: %d\n", getpid());
 	}
 	if (pid > 0) {
-		//printf("child pid: %d\n",pid);
-		printf("parent pid: %d\n",getpid());
-		exit(0);
+		printf("parent pid: %d\n", getpid());
+		exit(EXIT_SUCCESS);
 	}
-	
-	/* Change the current working directory */
 	if ((chdir("/")) < 0) {
-		/* Log the failure */
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	/* Close out the standard file descriptors */
 	close(STDIN_FILENO);
+#ifndef DEBUG
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
+#endif
 
-	/* redirect fd's 0,1,2 to /dev/null */ 
-	/** @TODO - Create a null device **/
-	//open ("/dev/null", O_RDWR);     /* stdin */
-	//dup (0);                        /* stdout */
-	//dup (0);                        /* stderror */
+	return pid;
+}
 
-	/* 
-	 * Daemon-specific initialization goes here 
-	 */
+int main(int argc, char **argv)
+{
+
+	pid_t init = daemon_init();
+
 	/* The Big Loop */
-	while (1) {	/* Do some task here ... */ }
-	exit(0);
+	while (1) {		/* Do some task here ... */
+	}
+	exit(EXIT_FAILURE);
 }
