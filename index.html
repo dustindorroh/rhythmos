@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Rhythmos by dustindorroh</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Rhythmos</h1>
+        <h2>Small UNIX like Kernel for x86</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/dustindorroh/rhythmos/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/dustindorroh/rhythmos/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/dustindorroh/rhythmos" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>RhythmOS Reference</h1>
+
+<h2>Table of Contents</h2>
+
+<ul>
+<li>RhythmOS</li>
+<li>1 Overview
+
+<ul>
+<li>1.0.1 RhythmOS Features</li>
+<li>1.0.2 Source Code</li>
+</ul>
+</li>
+<li>2 Toolchain Setup
+
+<ul>
+<li>2.1 Build Environment</li>
+<li>2.2 Source Download</li>
+<li>2.3 Binutils</li>
+<li>2.4 GCC</li>
+<li>2.5 C Library</li>
+</ul>
+</li>
+<li>3 Building RhythmOS
+
+<ul>
+<li>3.1 Build Internals
+
+<ul>
+<li>3.1.1 Linking</li>
+<li>Linker Invocation</li>
+<li>link.ld</li>
+<li>Kernel Image</li>
+<li>Filesystem Image</li>
+<li>Bootloader Image</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>4 Running RhythmOS</li>
+<li>5 Filesystems</li>
+<li>6 Reporting bugs</li>
+<li>Concept index</li>
+</ul><hr><h2>RhythmOS</h2>
+
+<p>This manual is for <code>RhythmOS</code> (version 74852df, 8 June 2012), which is a an
+attempt at a barebones unix-like kernel</p>
+
+<ul>
+<li>Overview: General purpose and information. </li>
+<li>Toolchain Setup: Build a RhythmOS Toolchain </li>
+<li>Building RhythmOS: Steps to compile and build RhythmOS. </li>
+<li>Running RhythmOS: Steps to run RhythmOS </li>
+<li>Programming the kernel</li>
+<li>Multitasking: Interrupt handling </li>
+<li>Memory: Paging and virtual memory </li>
+<li>Dynamic Memory Allocation</li>
+<li>System calls</li>
+<li>I/O</li>
+<li>Filesystems</li>
+<li>Reporting bugs: Sending bug reports and feature suggestions. </li>
+</ul><p>--- The Detailed Node Listing --- </p>
+
+<p>Overview</p>
+
+<ul>
+<li>RhythmOS Features</li>
+<li>Source Code</li>
+</ul><p>Toolchain Setup</p>
+
+<ul>
+<li>Build Environment</li>
+<li>Source Download</li>
+<li>Binutils</li>
+<li>GCC</li>
+<li>C Library</li>
+</ul><p>Building RhythmOS</p>
+
+<ul>
+<li>Build Internals</li>
+</ul><p>Build Internals</p>
+
+<ul>
+<li>Linking</li>
+<li>Kernel Image</li>
+<li>Filesystem Image</li>
+<li>Bootloader Image</li>
+</ul><p>Linking</p>
+
+<ul>
+<li>Linker Invocation</li>
+<li>link.ld</li>
+</ul><p>link.ld</p>
+
+<ul>
+<li>Kernel Image</li>
+<li>Filesystem Image</li>
+<li>Bootloader Image</li>
+</ul><p>Programming the kernel</p>
+
+<ul>
+<li>Assembly</li>
+<li>C</li>
+</ul><p>C</p>
+
+<ul>
+<li>The Run-Time Library</li>
+</ul><hr><h2>1 Overview</h2>
+
+<p>This manual is for <code>RhythmOS</code> (version 74852df, 8 June 2012), which is a an
+attempt at a barebones unix-like kernel. This document intends to cover the
+how to build, use, and develop on Rhythmos as well as explain in depth some of
+the kernel internals. For up to date news check the project home which is
+located at <a href="https://github.com/dust%0Aindorroh/rhythmos/">https://github.com/dustindorroh/rhythmos/</a></p>
+
+<ul>
+<li>RhythmOS Features</li>
+<li>Source Code</li>
+</ul><hr><h4>1.0.1 RhythmOS Features</h4>
+
+<ul>
+<li>Small C library </li>
+<li>Kernel mode and user mode </li>
+<li>Basic Multitasking through the use of context switches and memory protection </li>
+<li>Dynamic memory allocation (using buddy allocation technique) </li>
+<li>Virtual memory </li>
+<li>Kernel Paging </li>
+<li>UNIX-like system calls:  Process management: <code>fork</code>, <code>kill</code>, <code>execve</code>, <code>waitpid</code> ...
+
+<ul>
+<li>Interprocess Communication (IPC): pipe, dup </li>
+</ul>
+</li>
+<li>Read only filesystem </li>
+</ul><hr><h4>1.0.2 Source Code</h4>
+
+<p>Use git to clone a copy of the source tree. Use the command below to clone the
+RhythmOS repository.</p>
+
+<pre><code>     git clone https://github.com/dustindorroh/rhythmos.git
+</code></pre>
+
+<hr><h2>2 Toolchain Setup</h2>
+
+<p>Build a RhythmOS Toolchain</p>
+
+<p>If your native architecture is x86 then you will most likely already have a
+toolchain that will work for RhythmOS. If your architecture is something else
+you will have to build an toolchain to cross compile to x86.</p>
+
+<p>You can find your architecture in Linux from one of the following commands:</p>
+
+<pre><code>     $ arch x86_64
+
+     $ lscpu | grep Arch
+     Architecture:          x86_64
+
+     $ uname -m
+     x86_64
+</code></pre>
+
+<ul>
+<li>Build Environment</li>
+<li>Source Download</li>
+<li>Binutils</li>
+<li>GCC</li>
+<li>C Library</li>
+</ul><hr><h3>2.1 Build Environment</h3>
+
+<p>Export build variables</p>
+
+<pre><code>     $ export PREFIX=/usr/local/cross
+     $ export TARGET=i386-elf
+</code></pre>
+
+<p>Create build directories for gcc binutils and newlibc</p>
+
+<pre><code>     $ mkdir -p build/{gcc,binutils,newlib}
+     $ sudo mkdir /usr/local/cross
+</code></pre>
+
+<hr><h3>2.2 Source Download</h3>
+
+<p>Download and extract Binutils and gcc and newlibc</p>
+
+<pre><code>     $ wget http://ftp.gnu.org/gnu/binutils/binutils-2.21.1a.tar.bz2
+     $ wget http://ftp.gnu.org/gnu/gcc/gcc-4.6.2/gcc-4.6.2.tar.bz2
+     $ wget ftp://sources.redhat.com/pub/newlib/newlib-1.20.0.tar.gz
+     $ tar xjvf binutils-2.21.1a.tar.bz2
+     $ tar xjvf gcc-4.6.2.tar.bz2
+     $ tar xzvf newlib-1.20.0.tar.gz
+</code></pre>
+
+<p>Download gmp mpfr and mpc required by gcc</p>
+
+<pre><code>     $ wget ftp://ftp.gmplib.org/pub/gmp-5.0.2/gmp-5.0.2.tar.bz2
+     $ wget http://www.mpfr.org/mpfr-current/mpfr-3.1.0.tar.bz2
+     $ wget http://www.multiprecision.org/mpc/download/mpc-0.9.tar.gz
+</code></pre>
+
+<p>Extract gmp mpfr and mpc into the gcc directory so that gcc will build them
+automatically</p>
+
+<pre><code>     $ cd gcc-4.6.2
+     $ tar xjvf ../gmp-5.0.2.tar.bz2 &amp;&amp; mv gmp-5.0.2/ gmp
+     $ tar xjvf ../mpfr-3.1.0.tar.bz2 &amp;&amp; mv mpfr-3.1.0/ mpfr
+     $ tar xzvf ../mpc-0.9.tar.gz  &amp;&amp; mv mpc-0.9/ mpc
+     $ cd ..
+</code></pre>
+
+<hr><h3>2.3 Binutils</h3>
+
+<p>Configure Binutils</p>
+
+<pre><code>     $ cd build/binutils/
+     $ ../../binutils-2.21.1/configure --target=$TARGET \
+                                       --prefix=$PREFIX \
+                                       --disable-nls
+</code></pre>
+
+<p>Make and Install Binutils</p>
+
+<pre><code>     $ make all
+     $ sudo make install
+     $ cd ../..
+</code></pre>
+
+<hr><h3>2.4 GCC</h3>
+
+<p>Setup Environment</p>
+
+<pre><code>     $ export PATH=$PATH:$PREFIX/bin
+</code></pre>
+
+<p>Configure GCC</p>
+
+<pre><code>     $ cd build/gcc
+     $ ../../gcc-4.6.2/configure  --target=$TARGET \
+                                  --prefix=$PREFIX \
+                                  --disable-nls \
+                                  --enable-languages=c \
+                                  --without-headers
+</code></pre>
+
+<p>Make And Install GCC</p>
+
+<pre><code>     $ make all-gcc
+     $ sudo make install-gcc
+     $ cd ../..
+</code></pre>
+
+<hr><h3>2.5 C Library</h3>
+
+<p>Configure Newlib</p>
+
+<pre><code>     $ cd build/newlib
+     $ ../../newlib-1.20.0/configure --target=$TARGET \
+                                     --prefix=$PREFIX
+</code></pre>
+
+<p>Make and Install Newlib</p>
+
+<pre><code>     $ make all
+     $ sudo make install
+</code></pre>
+
+<p>Run command below if <code>sudo make install</code> cant find utils in /usr/cross/bin</p>
+
+<pre><code>     $ sudo ln -s /usr/local/cross/bin/i386-elf-* /usr/local/bin
+     $ sudo make install
+</code></pre>
+
+<hr><h2>3 Building RhythmOS</h2>
+
+<p>From the top level project directory execute the configure script.</p>
+
+<pre><code>     $ ./configure
+</code></pre>
+
+<p>To build everything just type `make'. This should build the kernel image
+kernel.img, the file system image filesystem.img, and the grub boot image
+grub.img</p>
+
+<pre><code>     $ make
+</code></pre>
+
+<p>To only build root file system type <code>make fs'. To only build the bootloader
+type</code>make boot'.</p>
+
+<ul>
+<li>Build Internals</li>
+</ul><hr><p>RhythmOS</p>
+
+<h3>3.1 Build Internals</h3>
+
+<ul>
+<li>Linking</li>
+<li>Kernel Image</li>
+<li>Filesystem Image</li>
+<li>Bootloader Image</li>
+</ul><hr><h4>3.1.1 Linking</h4>
+
+<p>The linker combines input files into a single output file. The output file and
+each input file are in a special data format known as an object file format.
+Each file is called an object file. The output file is often called an
+executable, but for our purposes we will also call it an object file. Each
+object file has, among other things, a list of sections. We sometimes refer to
+a section in an input file as an input section; similarly, a section in the
+output file is an output section.</p>
+
+<p>You can see the sections in an object file by using the objdump program with
+the -h option. Every object file also has a list of symbols, known as the
+symbol table. A symbol may be defined or undefined. Each symbol has a name,
+and each defined symbol has an address.</p>
+
+<ul>
+<li>Linker Invocation</li>
+<li>link.ld</li>
+</ul><hr><h5>Linker Invocation</h5>
+
+<pre><code>     # Link using link.ld
+     $(KERNEL_IMG): $(KERNEL_OBJECTS)
+         $(LD) -T link.ld -o $(KERNEL_IMG) $(KERNEL_OBJECTS)
+</code></pre>
+
+<p>The -T option instructs the linker ld to use the commands in the script file
+link.ld. It specifies the various segments used by the program. In the file we
+specify 3 segments:</p>
+
+<p>•<code>.text</code> - Code segment</p>
+
+<p>•<code>.data</code> - Data segment</p>
+
+<p>•<code>.bss</code> - Stack segment</p>
+
+<hr><h5>link.ld</h5>
+
+<pre><code>     OUTPUT_FORMAT("binary")
+     ENTRY(start)
+     phys = 0x00100000;
+     SECTIONS
+     {
+       .text phys : AT(phys) {
+         code = .;
+         *(.text)
+         *(.rodata)
+         . = ALIGN(4096);
+       }
+       .data : AT(phys + (data - code))
+       {
+         data = .;
+         *(.data)
+         . = ALIGN(4096);
+       }
+       .bss : AT(phys + (bss - code))
+       {
+         bss = .;
+         *(.bss)
+         . = ALIGN(4096);
+       }
+      . = ALIGN(4096);
+       end = .;
+     }
+</code></pre>
+
+<p>In order for <code>RhythmOS</code> to be able to boot properly, three different binary
+images are needed (see Building RhythmOS). The <em>images</em> also have to be made
+in a particular order due to the build dependencies, thus the build process
+naturally falls into a three step process:</p>
+
+<ol>
+<li>Kernel Image (see Kernel Image) </li>
+<li>Filesystem Image (see Filesystem Image) </li>
+<li>Bootloader Image (see Bootloader Image) </li>
+<li>Kernel Image</li>
+<li>Filesystem Image</li>
+<li>Bootloader Image</li>
+</ol><hr><h4>Kernel Image</h4>
+
+<p>Executing make compiles individual source (<code>.c</code>) into object files (<code>.o</code>). The
+linker (ld) is then used next to link the object files into one binary
+src/kernel.img. See Assembly.</p>
+
+<hr><h4>Filesystem Image</h4>
+
+<p>The make fs target executes the build script mk_filesystem_image.sh located in
+src, the project's source directory.</p>
+
+<p>The srcipt mk_filesystem_image.sh creates empty directories in the project
+tree, which will be a staging place for the root files that will be used by
+RhythmOS. Next, the programs that will run on the kernel (ie sh, ls, cat, etc
+... ) will be copied to the appropiate staging directory 1. An example of how
+rootfs might be structured.</p>
+
+<pre><code>     $ tree rootfs/
+     rootfs/
+     |-- bin
+     |   |-- cat
+     |   |-- find
+     |   |-- ls
+     |   |-- pwd
+     |   `-- sh
+     |-- etc
+     `-- usr
+</code></pre>
+
+<p>An image, based off of the staging filesystem, is then built up in memory 2.
+When complete the filesystem image will be located src/filesystem.img.</p>
+
+<hr><p>Internals</p>
+
+<h4>Bootloader Image</h4>
+
+<p>In order to run the kernel, it’s necessary to use a boot loader. This is the
+first thing that runs when a computer starts, and is responsible for loading
+the kernel file into memory and instructing the processor to start executing
+it.</p>
+
+<p>The grub.img is the GRUB image that we will as are bootloader. This file
+contains our kernel image and our file system image.</p>
+
+<pre><code>     $ mkdir floppy
+     $ sudo mount src/grub.img floppy
+     $ tree floppy/
+     floppy/
+     |-- boot
+     |   `-- grub
+     |       |-- fat_stage1_5
+     |       |-- menu.lst
+     |       |-- stage1
+     |       `-- stage2
+     |-- filesystem.img
+     `-- kernel.img
+
+     2 directories, 6 files
+</code></pre>
+
+<p>The menu.lst contains the menu settings for GRUB along with the boot commands
+for each entry.</p>
+
+<pre><code>     $ cat floppy/boot/grub/menu.lst
+     timeout 5
+     title RhythmOS
+     root (fd0)
+     kernel /kernel.img
+     modulenounzip (fd0)/filesystem.img
+
+     $ sudo mount src/grub.img floppy
+</code></pre>
+
+<p>If you can't mount grub.img to edit it this is OK because the grub.img that
+comes with the source is already formated and for updating the image we use
+<a href="http://www.gnu.org/s/mtools/">Mtools</a> which doesn't require special
+permissions. See below for details...</p>
+
+<p>Using mk_boot_image.sh makes sure to delete the old kernel image and
+filesystem image from the GRUB image. It then writes the kernel image
+(kernel.img) and filesystem image (kernel.img) data to the GRUB image
+grub.img.</p>
+
+<pre><code>     # Delete old images
+     $ mdel -i grub.img ::kernel.img || true
+     $ mdel -i grub.img ::filesystem.img || true
+
+     # Copy updated images
+     $ mcopy -i grub.img kernel.img :: || exit 1
+     $ mcopy -i grub.img filesystem.img :: || exit 1
+</code></pre>
+
+<p>The `make boot' target executes mk_boot_image.sh for you.</p>
+
+<hr><h2>4 Running RhythmOS</h2>
+
+<p>Once the kernel has been copied to the disk image, you can then run it under
+qemu using one of the following commands:</p>
+
+<pre><code>     $ qemu -fda src/grub.img
+     $ qemu -daemonize -fda src/grub.img       # daemonize qemu
+     $ qemu -monitor stdio -fda src/grub.img   # output qemu debug on stdio
+</code></pre>
+
+<p>This same command can also be run through the make target <code>run</code>;</p>
+
+<pre><code>     $make run
+</code></pre>
+
+<p>To run without using the grub.img you can pass the kernel image and filesystem
+image seperatly to QEMU.</p>
+
+<pre><code>     $ qemu -kernel src/kernel.img -initrd src/filesystem.img
+</code></pre>
+
+<hr><h4>5.2.1 The Run-Time Library</h4>
+
+<p>A major part of writing code for your a kernel is getting suckered into
+rewriting the run-time library, also known as <code>libc</code>. This is because the RTL
+is the most OS <em>dependent</em> part of the compiler package: the C RTL provides
+enough functionality to allow you to write <em>portable</em> programs, but the inner
+workings of the RTL are <em>dependent</em> on the OS in use.</p>
+
+<p>The aim is to replicate the library defined by the ISO 3 C standard because
+this will make porting programs to my kernel easier. Writing a non-standard
+library will only result in having to re-write any application your trying to
+port; not to mention many open source projects that do conform to these
+standards will be open for me to use.</p>
+
+<hr><h2>9 System calls</h2>
+
+<pre><code>             Source for system calls are located in syscall.c,
+     fscalls.c, filedesc.c, unixproc.c, pipe.c.
+</code></pre>
+
+<p>When the interrupt occurs, the CPU switches to kernel mode, and executes the
+interrupt handler, which is actually implemented in assembler within start.s.
+This pushes the register values onto the stack, and then calls the
+<code>interrupt_handler</code> function, which is implemented in <code>C</code>. The registers that
+were put onto the stack are available as a parameter to this function, as a
+regs object. The interrupt handler then calls the <code>syscall</code> function, which
+inspects the registers to determine which system call was requested, and then
+dispatches to the appropriate handler function.</p>
+
+<p>For example the system call <code>write</code> is implemented by the handler function
+<code>syscall_write</code>. The parameters to the system call may be accessed by looking
+at the process's stack. One of the saved registers is the stack pointer, which
+the syscall function uses to determine the location in memory of the
+parameters, which it then passes to the handler function. The handler for the
+system call then performs whatever actions are necessary, which can include
+privileged operations such as writing to any area of memory, since this code
+runs in kernel mode. Once the handler function returns, control is passed
+backwards along the same path, until it returns to the process that was
+previously executing. In some cases, such as the read or exit system calls,
+the process may have been killed or suspended. If this is the case, syscall
+performs a context switch, so that a different process will be executed when
+the interrupt handler returns.</p>
+
+<p>The <code>exit</code> system call is used by a process to terminate itself. When this
+call is made, the <code>kill_process</code> function is called, and the handler function
+returns the special value <code>-ESUSPEND</code>, indicating to the syscall dispatching
+function that the current process is no longer running, and it should perform
+a context switch. Processes should always call <code>exit</code> as their last action, to
+indicate the kernel that they have no more instructions to be executed.</p>
+
+<p>List of all the syscalls RhythmOS has available:</p>
+
+<pre><code>               KERNEL             USER         LOCATION
+               -----------------------------------------
+               syscall_pipe       pipe         pipe.c
+               syscall_getpid     getpid       syscall.c
+               syscall_exit       exit         syscall.c
+               syscall_write      write        syscall.c
+               syscall_read       read         syscall.c
+               syscall_geterrno   geterrno     syscall.c
+               syscall_brk        brk          syscall.c
+               syscall_send       send         syscall.c
+               syscall_receive    receive      syscall.c
+               syscall_kill       kill         syscall.c
+               syscall_close      close        filedesc.c
+               syscall_dup2       dup2         filedesc.c
+               syscall_fork       fork         unixproc.c
+               syscall_execve     execve       unixproc.c
+               syscall_waitpid    waitpid      unixproc.c
+               syscall_stat       stat         fscalls.c
+               syscall_open       open         fscalls.c
+               syscall_chdir      chdir        fscalls.c
+               syscall_getcwd     getcwd       fscalls.c
+               syscall_getdent    getdent      fscalls.c
+</code></pre>
+
+<hr><h2>10 I/O</h2>
+
+<hr><h2>11 Filesystems</h2>
+
+<p>The contents of the root filesystem must be adequate to <em>boot</em>, <em>restore</em>,
+and/or <em>recover</em> the system.</p>
+
+<p>•To <em>boot</em> a system, enough must be present on the root partition to mount
+other filesystems. This includes utilities, configuration, boot loader
+information, and other essential start-up data.</p>
+
+<p>•For the <em>recovery</em> of a system, utilities are needed by the user to diagnose
+and reconstruct the damaged system; these utilities need be present on the
+root filesystem.</p>
+
+<p>•To <em>restore</em> a system, those utilities needed to restore from system backups
+(on floppy, tape, etc.) must be present on the root filesystem.</p>
+
+<p>See <a href="http://www.pathname.com/fhs/pub/fhs-2.3.html#THEROOTFILESYSTEM">The Root Filesystem
+Standards</a> for
+more a more indepth analysis.</p>
+
+<p>Below is an example of a root filesystem /. Ones marked with an asterisk (&lt;*&gt;)
+are currently beind used by <code>RhythmOS</code>.</p>
+
+<p><em>Rootfs file system structure</em></p>
+
+<p>/bin    &lt;*&gt; Essential command binaries</p>
+
+<p>/boot    Static files of the boot loader</p>
+
+<p>/dev    Device files</p>
+
+<p>/etc    &lt;*&gt; Host-specific system configuration</p>
+
+<p>/lib    Essential shared libraries and kernel modules</p>
+
+<p>/media    Mount point for removeable media</p>
+
+<p>/mnt    Mount point for mounting a filesystem temporarily</p>
+
+<p>/opt    Add-on application software packages</p>
+
+<p>/sbin    Essential system binaries</p>
+
+<p>/srv    Data for services provided by this system</p>
+
+<p>/tmp    Temporary files</p>
+
+<p>/usr    &lt;*&gt; Secondary hierarchy</p>
+
+<p>/var    Variable data</p>
+
+<hr><h2>12 Reporting bugs</h2>
+
+<p>To report bugs or suggest enhancements for RhythmOS, please send electronic
+mail to <a href="mailto:dustindorroh@gmail.com">dustindorroh@gmail.com</a>.</p>
+
+<h2>Concept index</h2>
+
+<ul>
+<li>authors: RhythmOS Features</li>
+<li>Binutils: Binutils</li>
+<li>Bootloader Image: Bootloader Image</li>
+<li>bug reporting: Reporting bugs</li>
+<li>Build Environment: Build Environment</li>
+<li>Build Internals: Build Internals</li>
+<li>Building RhythmOS: Building RhythmOS</li>
+<li>C: C</li>
+<li>C Library: C Library</li>
+<li>compiler: The Run-Time Library</li>
+<li>Dustin, Dorroh: RhythmOS Features</li>
+<li>FDL, GNU Free Documentation License: Reporting bugs</li>
+<li>Filesystem Image: Filesystem Image</li>
+<li>GCC: GCC</li>
+<li>Generate Kernel Image: Kernel Image</li>
+<li>kernel: The Run-Time Library</li>
+<li>link.ld: link.ld</li>
+<li>Linker Invocation: Linker Invocation</li>
+<li>Linking: Linking</li>
+<li>open source: The Run-Time Library</li>
+<li>OS: The Run-Time Library</li>
+<li>Overview: Overview</li>
+<li>portable: The Run-Time Library</li>
+<li>problems: Reporting bugs</li>
+<li>reporting bugs: Reporting bugs</li>
+<li>RhythmOS Features: RhythmOS Features</li>
+<li>RTL: The Run-Time Library</li>
+<li>Run-Time Library: The Run-Time Library</li>
+<li>Source Code: Source Code</li>
+<li>Source Download: Source Download</li>
+<li>Toolchain Setup: Toolchain Setup</li>
+</ul><hr><h4>Footnotes</h4>
+
+<p>[1] For example binaries will placed in rootfs/bin directory on the host
+machine</p>
+
+<p>[2] <em>See</em> fstool.c in the project source to see how the image is created</p>
+
+<p>[3] International Standardization Organization</p>
+
+<hr>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
