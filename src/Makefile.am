@@ -19,11 +19,13 @@ HOST_AS = $(AS)
 # Target defs
 TARGET_CPP = cpp
 TARGET_CC = gcc
+TARGET_CXX = g++
 TARGET_CFLAGS = -m32 -fno-stack-protector -Wall -nostdinc -fno-builtin
 TARGET_AS = as
 TARGET_AS_FLAGS = --32
 TARGET_LD = ld
 TARGET_LD_FLAGS = -m elf_i386
+TARGET_CXXFLAGS = -m32 -fno-stack-protector -Wall -nostdinc -fno-builtin
 
 INCLUDE = -Iinclude
 
@@ -50,7 +52,7 @@ KERNEL_OBJECTS = \
 	keyboard.o
 USER_OBJECTS = crtso.o libc.o calls.o buddy.o
 
-COREUTILS = sh ls cat find pwd echo hello dsh kill halt hlt 
+COREUTILS = sh ls cat find pwd  hello dsh kill halt hlt  echo-cxx
 COREUTILS_OBJECTS = $(addsuffix .o, $(COREUTILS))
 
 TESTS = mptest daemon
@@ -102,6 +104,8 @@ testbuddy: testbuddy.c buddy.c buddy.h
 %.o: %.s
 	$(TARGET_CPP) $(INCLUDE) $< | $(TARGET_AS) $(TARGET_AS_FLAGS) -o $*.o
 
+%.o: %.cpp
+	$(TARGET_CXX) $(INCLUDE) $(TARGET_CXXFLAGS) -c $<
 
 # Link using `link.ld'
 $(KERNEL_IMG): $(KERNEL_OBJECTS)
