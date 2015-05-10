@@ -21,7 +21,7 @@ Rhythmos can be simulated with QEMU a couple of different ways:
 1. Using QEMU as the bootloader. Pass QEMU the built kernel image
    src/kernel.img and the file system image src/filesystem.img.
 
-   $ qemu -kernel src/kernel.img -initrd src/filesystem.img
+   $ qemu-system-i386  -kernel src/kernel.img -initrd src/filesystem.img
 
 2. Build a bootable floppy image that uses grub as the bootloader. There
    is a one already created for you in the source tree. Just pass QEMU
@@ -36,8 +36,6 @@ To regenerate the grub.img because the ramdisk and/or the the kernel
 image was updated the grub.img make target will do this for you.  
 
 $ make grub.img
-
-
 
  GENERAL BUILD TARGETS:
 
@@ -57,3 +55,16 @@ $ make grub.img
 
        qemu -kernel src/kernel.img -initrd src/filesystem.img
        qemu -fda src/grub.img
+
+
+
+Ubuntu 15.04 Build:
+sudo apt-get install libc6-dev-i386 # needed for sys/cdefs.h
+sudo apt-get install qemu # virtual machine
+sudo apt-get install texinfo texlive # needed to generate documentation
+./autogen.sh # generate configure script
+./configure # generate Makefile
+make # build
+qemu-system-i386  -kernel src/kernel.img -initrd src/filesystem.img # runing rhythoms
+
+

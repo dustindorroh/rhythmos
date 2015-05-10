@@ -19,7 +19,7 @@ This is Edition @value{EDITION}, last updated @value{UPDATED},
 of @cite{RhythmOS Reference Manual}, 
 for @code{RhythmOS}, Version @value{VERSION}.
 
-Copyright @copyright{} 2012 Dustin Dorroh (@email{dustindorroh@@gmail.com})
+Copyright @copyright{} 2015 Dustin Dorroh (@email{dustindorroh@@gmail.com})
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice

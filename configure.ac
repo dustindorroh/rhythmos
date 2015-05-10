@@ -6,7 +6,7 @@
 
 AC_PREREQ([2.61])
 AC_INIT([rhythmos], [0.1], [dustindorroh@gmail.org])
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AM_INIT_AUTOMAKE([-Wall foreign])
 AC_CONFIG_SRCDIR([src/main.c])
 #AC_CONFIG_HEADERS([config.h])
 

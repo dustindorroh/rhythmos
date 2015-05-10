@@ -38,7 +38,7 @@ $ make@settitle Running
 Rhythmos can be simulated with QEMU a couple of different ways:
 
 @strong{1.} Using QEMU as the bootloader. Pass QEMU the built kernel image @code{src/kernel.img} and the file system image @code{src/filesystem.img}. 
-@example$ qemu -kernel src/kernel.img -initrd src/filesystem.img@end example
+@example$ qemu-system-i386  -kernel src/kernel.img -initrd src/filesystem.img@end example
 
 
 @strong{2.} Build a bootable floppy image that uses grub as the bootloader. There is a one already created for you in the source tree. Just pass QEMU the floppy image: directly use the command below. 
