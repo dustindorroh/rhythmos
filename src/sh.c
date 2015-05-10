@@ -122,7 +122,7 @@ void process_line(char *line, int *done)
 			printf("Usage: cd <path>\n");
 		else if (0 > chdir(argv[1]))
 			perror(argv[1]);
-	} else if (!strcmp(argv[0], "pwwd")) {
+	} else if (!strcmp(argv[0], "pwd")) {
 		/* Print current working directory */
 		char path[PATH_MAX];
 		if (NULL == getcwd(path, PATH_MAX))
