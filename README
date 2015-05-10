@@ -53,18 +53,16 @@ $ make grub.img
 
  QEMU EXAMPLES:
 
-       qemu -kernel src/kernel.img -initrd src/filesystem.img
+       qemu-system-i386  -kernel src/kernel.img -initrd src/filesystem.img # runing rhythoms
        qemu -fda src/grub.img
 
-
-
 Ubuntu 15.04 Build:
-sudo apt-get install libc6-dev-i386 # needed for sys/cdefs.h
-sudo apt-get install qemu # virtual machine
-sudo apt-get install texinfo texlive # needed to generate documentation
-./autogen.sh # generate configure script
-./configure # generate Makefile
-make # build
-qemu-system-i386  -kernel src/kernel.img -initrd src/filesystem.img # runing rhythoms
+   sudo apt-get install libc6-dev-i386 # needed for sys/cdefs.h
+   sudo apt-get install qemu # virtual machine
+   sudo apt-get install texinfo texlive # needed to generate documentation
+   ./autogen.sh # generate configure script
+   ./configure # generate Makefile
+   make # build
+   qemu-system-i386  -kernel src/kernel.img -initrd src/filesystem.img # runing rhythoms
 
 
