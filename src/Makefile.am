@@ -115,11 +115,14 @@ $(TESTS): %: %.o $(USER_OBJECTS)
 	$(TARGET_LD) $(TARGET_LD_FLAGS) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
 
 # Misc targets
-.PHONY : run run-qemu install clean
+.PHONY : run run-grub run-qemu install clean
 run: |run-qemu
 
 run-qemu: boot
-	qemu -daemonize -fda $(GRUB_IMG)
+	qemu-system-i386 -kernel $(KERNEL_IMG) -initrd $(FILESYSTEM_IMG) # runing with kernel image and filesystem image
+
+run-grub: boot
+	qemu-system-i386 -daemonize -fda $(GRUB_IMG) # running with built grub image
 
 
 clean-local:
