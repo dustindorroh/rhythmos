@@ -213,7 +213,7 @@ void number_lines()
 void launch_shell()
 {
 	char program[100];
-	snprintf(program, 100, "/bin/sh");
+	snprintf(program, 100, "/bin/dsh");
 	execve(program, NULL, NULL);
 	printf("/bin/sh: execve failed: %d\n", errno);
 	exit(1);
@@ -223,7 +223,7 @@ void launch_shell()
  * kmain
  * 
  * This is the first thing that executes when the kernel starts. Any
- * initialisation e.g. interrupt handlers must be done at the start of
+ * initialization e.g. interrupt handlers must be done at the start of
  * the function. This function should never return.
  */
 void kmain(multiboot * mb)
