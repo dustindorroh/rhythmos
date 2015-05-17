@@ -15,20 +15,23 @@ HOST_CFLAGS = -Wall
 HOST_CPP = $(CPP)
 HOST_LD = $(LD)
 HOST_AS = $(AS)
+HOST_QEMU = qemu-system-i386
 
 # Target defs
 TARGET_CPP = cpp
 TARGET_CC = gcc
-TARGET_CFLAGS = -m32 -fno-stack-protector -Wall -nostdinc -fno-builtin
+TARGET_CFLAGS = -g -m32 -fno-stack-protector -Wall -nostdinc -fno-builtin
 TARGET_AS = as
 TARGET_AS_FLAGS = --32
 TARGET_LD = ld
 TARGET_LD_FLAGS = -m elf_i386
+TARGET_OBJCOPY = objcopy
 
 INCLUDE = -Iinclude
 
 PRJ_ROOT ?= ..
 KERNEL_IMG = kernel.img
+KERNEL_DEBUG_SYMBOLS = kernel.sym
 FILESYSTEM_IMG = filesystem.img
 GRUB_IMG = grub.img
 KERNEL_OBJECTS = \
@@ -78,7 +81,7 @@ grub.img: |boot
 fdimage:|boot
 
 boot: default fs
-	./mk_boot_image.sh
+	./mk_boot_image.sh $(KERNEL_IMG) $(FILESYSTEM_IMG)
 
 filesystem.img: |fs
 
@@ -106,6 +109,8 @@ testbuddy: testbuddy.c buddy.c buddy.h
 # Link using `link.ld'
 $(KERNEL_IMG): $(KERNEL_OBJECTS)
 	$(TARGET_LD) $(TARGET_LD_FLAGS) -T link.ld -o $(KERNEL_IMG) $(KERNEL_OBJECTS)
+	$(TARGET_OBJCOPY) --only-keep-debug $(KERNEL_IMG) $(KERNEL_DEBUG_SYMBOLS) # Build symbols file
+	$(TARGET_OBJCOPY) --strip-debug $(KERNEL_IMG) # strip symbols out of kernel image
 
 # Link using `link-user.ld'
 $(COREUTILS): %: %.o $(USER_OBJECTS)
@@ -119,14 +124,16 @@ $(TESTS): %: %.o $(USER_OBJECTS)
 run: |run-qemu
 
 run-qemu: boot
-	qemu-system-i386 -kernel $(KERNEL_IMG) -initrd $(FILESYSTEM_IMG) # runing with kernel image and filesystem image
+	$(HOST_QEMU) -kernel $(KERNEL_IMG) -initrd $(FILESYSTEM_IMG) # runing with kernel image and filesystem image
 
 run-grub: boot
-	qemu-system-i386 -daemonize -fda $(GRUB_IMG) # running with built grub image
+	$(HOST_QEMU) -daemonize -fda $(GRUB_IMG) # running with built grub image
 
+run-debug:
+	$(HOST_QEMU) -s -S -kernel $(KERNEL_IMG) -initrd $(FILESYSTEM_IMG) #$(GRUB_IMG) 
 
 clean-local:
-	-rm --force $(KERNEL_IMG) $(KERNEL_OBJECTS) $(FILESYSTEM_IMG) \
+	-rm --force $(KERNEL_IMG) $(KERNEL_DEBUG_SYMBOLS) $(KERNEL_OBJECTS) $(FILESYSTEM_IMG) \
 	$(USER_OBJECTS) \
 	$(COREUTILS) $(COREUTILS_OBJECTS) \
 	$(TESTS) $(TESTS_OBJECTS) \
