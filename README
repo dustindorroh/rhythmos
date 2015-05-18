@@ -32,6 +32,18 @@ Rhythmos can be simulated with QEMU a couple of different ways:
    The run target also boots this way, but it first creates a fresh
    image before booting.
 
+To debug the kernel:
+1. run qemu with gdb debug server
+   $ make run-debug
+
+2. In another terminal, run gdb and connect the the server
+   $ gdb
+   $ (gdb) symbol-file src/kernel.sym
+   $ (gdb) target remote localhost:1234
+   Set your breakpoint if desired
+   $ (gdb) breakpoint buddy_alloc
+   $ (gdb) continue
+
 To regenerate the grub.img because the ramdisk and/or the the kernel
 image was updated the grub.img make target will do this for you.  
 

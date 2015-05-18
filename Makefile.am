@@ -29,3 +29,5 @@ rhythmos.info rhythmos.dvi rhythmos.pdf rhythmos.html standards.pdf:
 	$(MAKE) -Csrc $@
 run:
 	$(MAKE) -Csrc run
+run-debug:
+	$(MAKE) -Csrc run-debug
