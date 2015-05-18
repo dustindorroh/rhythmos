@@ -20,11 +20,11 @@ HOST_QEMU = qemu-system-i386
 # Target defs
 TARGET_CPP = cpp
 TARGET_CC = gcc
-TARGET_CFLAGS = -g -m32 -fno-stack-protector -Wall -nostdinc -fno-builtin
+TARGET_CFLAGS = -g -m64 -fno-stack-protector -Wall -nostdinc -fno-builtin
 TARGET_AS = as
-TARGET_AS_FLAGS = --32
+TARGET_AS_FLAGS = --64
 TARGET_LD = ld
-TARGET_LD_FLAGS = -m elf_i386
+TARGET_LD_FLAGS = -m elf_x86_64
 TARGET_OBJCOPY = objcopy
 
 INCLUDE = -Iinclude

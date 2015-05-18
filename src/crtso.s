@@ -10,9 +10,9 @@
 start:
   call init_userspace_malloc
   call main
-  pushl %eax
-  pushl $0
-  mov $SYSCALL_EXIT,%eax
+  push %rax
+  push $0
+  mov $SYSCALL_EXIT,%rax
   int $INTERRUPT_SYSCALL
 idle:
   jmp idle

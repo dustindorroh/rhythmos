@@ -22,8 +22,8 @@
 .globl ih_stack
 
 start:
-  mov $sys_stack,%esp
-  push %ebx # multiboot header
+  mov $sys_stack,%rsp
+  push %rbx # multiboot header
   call kmain
 
 .align 4
@@ -49,20 +49,20 @@ idle:
   jmp idle
 
 set_gdt:
-  mov 4(%esp),%eax
-  lgdt (%eax)
+  mov 4(%rsp),%rax
+  lgdt (%rax)
   mov $0x10,%ax
-  mov %eax,%ds
-  mov %eax,%es
-  mov %eax,%fs
-  mov %eax,%gs
-  mov %eax,%ss
+  mov %rax,%ds
+  mov %rax,%es
+  mov %rax,%fs
+  mov %rax,%gs
+  mov %rax,%ss
   ljmp $0x8, $(set_gdt_end)
 set_gdt_end:
   ret
 
 set_tss:
-  mov 4(%esp),%eax
+  mov 4(%rsp),%rax
   ltr %ax
   ret
 
@@ -83,8 +83,8 @@ interrupt_handlers:
 .globl isr\num
 isr\num:
   cli
-  pushl $0x0
-  pushl $\num
+  push $0x0
+  push $\num
   jmp call_interrupt_handler
 .endm
 
@@ -92,7 +92,7 @@ isr\num:
 .globl isr\num
 isr\num:
   cli
-  pushl $\num
+  push $\num
   jmp call_interrupt_handler
 .endm
 
@@ -159,7 +159,7 @@ call_interrupt_handler:
   push %fs
   push %gs
   fsave fpustate
-  subl $108,%esp
+  subl $108,%rsp
 
   # Change the segment registers to those used for kernel mode
   mov $0x10,%ax
@@ -167,29 +167,29 @@ call_interrupt_handler:
   mov %ax,%es
   mov %ax,%fs
   mov %ax,%gs
-  mov %esp,%eax
+  mov %rsp,%rax
 
   # Call interrupt_handler()
-  push %eax
-  mov $interrupt_handler,%eax
-  call *%eax
-  pop %eax
+  push %rax
+  mov $interrupt_handler,%rax
+  call *%rax
+  pop %rax
 
   # Restore register state
   frstor fpustate
-  addl $108,%esp
+  addl $108,%rsp
   pop %gs
   pop %fs
   pop %es
   pop %ds
   popa
-  add $8,%esp
+  add $8,%rsp
   iret
 
 # This is the function that the kernel uses to perform the initial switch from
 # kernel mode into user mode. It also causes interrupts to be enabled (right
 # at the end). After this function completes, the kernel will be in a fully
-# "running" state, where it is responding to interrupts and context switching
+# "running" state, where it is rrsponding to interrupts and context switching
 # between processes.
 enter_user_mode:
 
@@ -209,11 +209,11 @@ enter_user_mode:
   # happens when a normal interrupt handler returns, except in this case we're
   # manufacturing the saved CPU state on the stack, which in the case of a real
   # interrupt would be put there by the processor itself.
-  mov %esp, %eax
+  mov %rsp, %rax
   pushl $0x23              # Stack segment to restore
-  pushl %eax               # Stack pointer to restore
+  pushl %rax               # Stack pointer to restore
   pushf                    # Save processor flags
-  orl $0x200, 0(%esp)      # Set bit indicating interrupts are enabled
+  orl $0x200, 0(%rsp)      # Set bit indicating interrupts are enabled
   pushl $0x1B              # Code segment to restore (user mode)
   push $switch_to_user_end # Instruction pointer to restore (return address)
 
@@ -229,34 +229,34 @@ switch_to_user_end:        # The iret instruction will "return" here
 enable_paging:
   # Get the parameter to this function from the stack, and store it in the CR3
   # register, which tells the processor which page directory to use
-  movl 4(%esp),%eax
-  movl %eax,%cr3
+  movl 4(%rsp),%rax
+  movl %rax,%cr3
   # Set the paging bit of the CR0 register, which tells the processor to enable
   # paging
-  movl %cr0,%eax
-  orl $0x80000000,%eax
-  movl %eax,%cr0
+  movl %cr0,%rax
+  orl $0x80000000,%rax
+  movl %rax,%cr0
   ret
 
 disable_paging:
   # Clear the paging bit of the CR0 register
-  movl %cr0,%eax
-  andl $0x7FFFFFFF,%eax
-  movl %eax,%cr0
+  movl %cr0,%rax
+  andl $0x7FFFFFFF,%rax
+  movl %rax,%cr0
   ret
 
 # Returns the value of the CR2 register, which in the case of a page fault,
 # indicates the address that the process was trying to access when the fault
 # occurred.
 getcr2:
-  movl %cr2,%eax
+  movl %cr2,%rax
   ret
 
 .globl inb
 inb:
   push %edx
-  movl 8(%esp),%edx
-  movl $0,%eax
+  movl 8(%rsp),%edx
+  movl $0,%rax
   inb %dx,%al
   pop %edx
   ret
@@ -264,8 +264,8 @@ inb:
 .globl outb
 outb:
   push %edx
-  movl 12(%esp),%eax
-  movl 8(%esp),%edx
+  movl 12(%rsp),%rax
+  movl 8(%rsp),%edx
   outb %al,%dx
   pop %edx
   ret
